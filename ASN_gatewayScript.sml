@@ -280,7 +280,8 @@ val B1_FT_lemma3 = store_thm("B1_FT_lemma3",
        (list_prod_rel p
           (list_fail_event_list p
              [[D1]; [D4]; [E3]; [E4]; [E5];
-               [E8]; [E9]; [E10]] t ))) * list_prod
+               [E8]; [E9]; [E10]] t ))) * 
+list_prod
     (one_minus_list
        (list_prod_rel p
           (list_fail_event_list p
@@ -292,7 +293,7 @@ RW_TAC list_ss[list_fail_event_list_def,fail_event_list_def,fail_event_def,
 ++ RW_TAC std_ss[REAL_MUL_ASSOC]
 ++ RW_TAC std_ss[B1_FT_lemma2]);
 
-(*=================*)
+(*===========================================================================*)
 val B1_FT_lemma3_new = store_thm("B1_FT_lemma3_new",
   ``!p D1 D4 E1 E2 E3 E4 E5 E6 E7 E8 E9 E10 E21 t.
 (list_prod
@@ -306,7 +307,8 @@ list_prod
        (list_prod_rel p
           (list_fail_event_list p
              [[D1]; [D4]; [E3]; [E4]; [E5];
-               [E8]; [E9]; [E10]] t ))) * list_prod
+               [E8]; [E9]; [E10]] t ))) * 
+list_prod
     (one_minus_list
        (list_prod_rel p
           (list_fail_event_list p
