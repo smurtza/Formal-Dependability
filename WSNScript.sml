@@ -172,8 +172,8 @@ RW_TAC std_ss[]
 
 (*-------------------------------------*)
 val parallel_series_struct_rbd_v2 = store_thm("parallel_series_struct_rbd_v2",
-  ``!p L.  (∀z. MEM z L ⇒ ¬NULL z) ∧ prob_space p ∧
-     (∀x'. MEM x' (FLAT L) ⇒ x' ∈ events p) ∧ mutual_indep p (FLAT L) ⇒
+  ``!p L.  (!z. MEM z L ==> ~NULL z) /\ prob_space p /\
+     (!x'. MEM x' (FLAT L) ==> x' IN events p) /\ mutual_indep p (FLAT L) ==>
      (prob p
         (rbd_struct p ((parallel of (λa. series (rbd_list a))) L)) = 
 	 1 - (list_prod o (one_minus_list) of
@@ -191,15 +191,15 @@ by RW_TAC std_ss[of_DEF,o_DEF,list_prod_rel_def])
 (*---------------------------------------*)
 
 val parallel_series_exp_fail_rate = store_thm("parallel_series_exp_fail_rate",
-  ``∀p t L C.
-     (∀z. MEM z L ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
-     (∀x'.
-        MEM x' (FLAT (two_dim_rel_event_list p L t)) ⇒ x' ∈ events p) ∧
-     (LENGTH C = LENGTH L) ∧
-     (∀n.
-        n < LENGTH L ∧ n < LENGTH C ⇒
-        (LENGTH (EL n L) = LENGTH (EL n C))) ∧
-     two_dim_exp_dist_list p L C ⇒
+  ``!p t L C.
+     (!z. MEM z L ==> ~NULL z) /\ 0 <= t /\ prob_space p /\
+     (!x'.
+        MEM x' (FLAT (two_dim_rel_event_list p L t)) ==> x' IN events p) /\
+     (LENGTH C = LENGTH L) /\
+     (!n.
+        n < LENGTH L /\ n < LENGTH C ==>
+        (LENGTH (EL n L) = LENGTH (EL n C))) /\
+     two_dim_exp_dist_list p L C ==>
      (1 - (list_prod o (one_minus_list) of
 	(\a. list_prod (list_prob p a))) 
 	     (two_dim_rel_event_list p L t) = 
@@ -239,16 +239,16 @@ GEN_TAC ++ GEN_TAC
    
 (*------------------------------------------------*)
 val rel_parallel_series_exp_fail_rate = store_thm("rel_parallel_series_exp_fail_rate",
-  ``∀p t L C.
-     (∀z. MEM z L ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
-     (∀x'.
-        MEM x' (FLAT (two_dim_rel_event_list p L t)) ⇒ x' ∈ events p) ∧
-     mutual_indep p (FLAT (two_dim_rel_event_list p L t)) ∧
-     (LENGTH C = LENGTH L) ∧
-     (∀n.
-        n < LENGTH L ∧ n < LENGTH C ⇒
-        (LENGTH (EL n L) = LENGTH (EL n C))) ∧
-     two_dim_exp_dist_list p L C ⇒
+  ``!p t L C.
+     (!z. MEM z L ==> ~NULL z) /\ 0 <= t /\ prob_space p /\
+     (!x'.
+        MEM x' (FLAT (two_dim_rel_event_list p L t)) ==> x' IN events p) /\
+     mutual_indep p (FLAT (two_dim_rel_event_list p L t)) /\
+     (LENGTH C = LENGTH L) /\
+     (!n.
+        n < LENGTH L /\ n < LENGTH C ==>
+        (LENGTH (EL n L) = LENGTH (EL n C))) /\
+     two_dim_exp_dist_list p L C ==>
 (prob p
         (rbd_struct p ((parallel of (λa. series (rbd_list a))) 
 		    (two_dim_rel_event_list p L t))) =
