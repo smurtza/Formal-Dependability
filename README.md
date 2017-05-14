@@ -21,7 +21,7 @@ auto_smart_grid.ml			           SML functions for automatic simplification and c
 
 WSNScript.sml			Contains the formalization related to reliability analysis of WSN data transport protocol 
 
-frogpScript.sml			Contains the formalization relation to reliability analysis of oil and gas pipelines
+frogpScript.sml			Contains the formalization related to reliability analysis of oil and gas pipelines
 
 To use the proof script, follow the steps below:
  
