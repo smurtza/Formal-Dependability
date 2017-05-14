@@ -1500,6 +1500,25 @@ RW_TAC std_ss []
 ++ MATCH_MP_TAC  k_out_n_lemma6_new
 ++ EXISTS_TAC (--`X: ('a -> extreal)`--)
 ++ RW_TAC std_ss []);
+
+(*----------------------------*)
+val k_out_n_RBD_v1 = store_thm("k_out_n_RBD_v1",
+  ``!p n k X pr.
+       prob_space p /\ (k < (SUC n)) /\ 
+       (\x. PREIMAGE X {Normal(&x)} INTER p_space p) IN 
+       ((count (SUC n)) -> events p) /\
+       (!x. (distribution p X {Normal (&x)} = 
+       ((& binomial n x)* (pr pow x) * ((1- pr) pow (n - x))))) ==>
+       	  (prob p 
+	     (BIGUNION (IMAGE (\x. PREIMAGE X {Normal (&x)} INTER p_space p) 
+	     	       ({x|(k:num) <= x /\ x < (SUC n)}))) = 
+	    sum (k, (SUC n)-k) 
+	    	(\x. (& binomial n x)* (pr pow x) * ((1- pr) pow (n - x) )))``,
+RW_TAC std_ss []
+++ MATCH_MP_TAC EQ_SYM
+++ MATCH_MP_TAC  k_out_n_lemma6_new1
+++ EXISTS_TAC (--`X: ('a -> extreal)`--)
+++ RW_TAC std_ss []);
 (*--------------------------------------------------------*)
 (*---------------------Case: When k = 1, Parallel Structure components with
  -----------------------Identical Reliabilities-----------*)
