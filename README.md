@@ -19,6 +19,10 @@ smart_gridScript.sml		          Formalization describing the dependability analy
 
 auto_smart_grid.ml			           SML functions for automatic simplification and computation of dependability properties
 
+WSNScript.sml			Contains the formalization related to reliability analysis of WSN data transport protocol 
+
+frogpScript.sml			Contains the formalization relation to reliability analysis of oil and gas pipelines
+
 To use the proof script, follow the steps below:
  
 1) Run HOLmake in the folder HOL-script
