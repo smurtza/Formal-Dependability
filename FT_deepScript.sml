@@ -902,9 +902,9 @@ RW_TAC std_ss[comp_FT_gate_def,FTree_def,UNION_EMPTY]
 ++ REAL_ARITH_TAC);
 
 (*-----------------------------------------------------*)
-(* ------------------------------------------------------------------------- *)
-(* 	K-out-N RBD	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* ----------------------------------------------------*)
+(* 	K-out-N RBD	                               *)
+(* ----------------------------------------------------*)
 
 
 val Know = Q_TAC KNOW_TAC;
@@ -922,10 +922,13 @@ Define `(binomial n 0 = (1:num)) /\
 val sum_set_def =  Define `sum_set s f =  REAL_SUM_IMAGE f s`;
 (* ------------------------------------------------------------------------- *)
 (* ------------------------------------------------------------------------- *)
-(* Definition:         K_out_N_struct_def                                                    *)
+(* Definition:         K_out_N_struct_def                                    *)
 (* ------------------------------------------------------------------------- *)
 val K_out_N_struct_def =  Define `
-K_out_N_struct p X k n = (BIGUNION (IMAGE (\x. PREIMAGE X {Normal (&x)} INTER p_space p) ({x|(k:num) <= x /\ x < SUC n})))`;
+K_out_N_struct p X k n = 
+(BIGUNION (IMAGE (\x. PREIMAGE X {Normal (&x)} INTER p_space p) 
+	  ({x|(k:num) <= x /\ x < SUC n})))`;
+
 (* ------------------------------------------------------------------------- *)
 (* SUM_0_SUM_1			                                             *)
 (* ------------------------------------------------------------------------- *)
@@ -985,7 +988,8 @@ RW_TAC std_ss []
 (* ------------------------------------------------------------------------- *)
 val SUM_SWITCH_SUM = store_thm("SUM_SWITCH_SUM",
   ``!f n1 n2 m1 m2. 
-sum (n1,m1) (\i. sum (n2,m2)(\j. f i j)) = sum (n2,m2) (\j. sum (n1,m1)(\i. f i j))``,
+       sum (n1,m1) (\i. sum (n2,m2)(\j. f i j)) = 
+       sum (n2,m2) (\j. sum (n1,m1)(\i. f i j))``,
 RW_TAC std_ss []
 ++ Induct_on `m1`
 ++ RW_TAC real_ss [sum,SUM_0]
@@ -1004,15 +1008,15 @@ RW_TAC std_ss []
 ++ ONCE_REWRITE_TAC [sum]
 ++ METIS_TAC [REAL_LT_ADD]);
 
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_DEF1	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* ---------------------------------------------------*)
+(* 	BINOMIAL_DEF1	                              *)
+(* -------------------------------------------------- *)
 val BINOMIAL_DEF1 = store_thm("BINOMIAL_DEF1",
   ``!n. binomial n  0 = 1``,
 Cases_on `n` THEN REWRITE_TAC [binomial_def]); 
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_DEF2	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* -------------------------------------------------- *)
+(* 	BINOMIAL_DEF2	                              *)
+(* -------------------------------------------------- *)
 val BINOMIAL_DEF2 = store_thm("BINOMIAL_DEF2",
   ``!n k. n < k ==> (binomial n k = 0)``,
 Induct_on `n`
@@ -1022,21 +1026,24 @@ Induct_on `n`
 ++ Cases_on `k`
 >> (RW_TAC real_ss [])
 ++ RW_TAC arith_ss [binomial_def]);
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_DEF3	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* -------------------------------------------------- *)
+(* 	BINOMIAL_DEF3	                              *)
+(* -------------------------------------------------- *)
 val BINOMIAL_DEF3 = store_thm("BINOMIAL_DEF3",
   ``!n. (binomial n n = 1)``,
-Induct_on `n` THEN REWRITE_TAC [binomial_def] THEN RW_TAC arith_ss [BINOMIAL_DEF2]);
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_DEF4	                                             *)
-(* ------------------------------------------------------------------------- *)
+Induct_on `n` THEN 
+REWRITE_TAC [binomial_def] THEN 
+RW_TAC arith_ss [BINOMIAL_DEF2]);
+(* -------------------------------------------------- *)
+(* 	BINOMIAL_DEF4	                              *)
+(* -------------------------------------------------- *)
 val BINOMIAL_DEF4 = store_thm("BINOMIAL_DEF4",
-  ``!n k. (binomial (SUC n) (SUC k) = binomial n (SUC k) + binomial n k)``,
+  ``!n k. (binomial (SUC n) (SUC k) = 
+       	   binomial n (SUC k) + binomial n k)``,
 REWRITE_TAC [binomial_def]); 
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_DEF5	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* -------------------------------------------------- *)
+(* 	BINOMIAL_DEF5	                              *)
+(* -------------------------------------------------- *)
 val BINOMIAL_DEF5 = store_thm("BINOMIAL_DEF5",
   ``!n k. k <= n ==> (binomial n k <> 0)``,
 Induct_on `n`
@@ -1048,9 +1055,9 @@ Induct_on `n`
 >> (RW_TAC real_ss []
    ++ RW_TAC arith_ss [binomial_def])
 ++ RW_TAC arith_ss [binomial_def]);
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_FACT	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* -------------------------------------------------- *)
+(* 	BINOMIAL_FACT	                              *)
+(* -------------------------------------------------- *)
 val BINOMIAL_FACT = store_thm("BINOMIAL_FACT",
   ``!a b. binomial (a+b) b * (FACT a * FACT b) = FACT (a+b)``,
 Induct_on `b`
@@ -1061,7 +1068,7 @@ Induct_on `b`
 ++ (ASM_REWRITE_TAC[BINOMIAL_DEF4,RIGHT_ADD_DISTRIB])
 ++ POP_ORW
 ++ `binomial (SUC a + b) (SUC b) * (FACT (SUC a) * FACT (SUC b)) =
-                   (binomial (a + SUC b) (SUC b) * (FACT a * FACT (SUC b))) * SUC a` 
+    (binomial (a + SUC b) (SUC b) * (FACT a * FACT (SUC b))) * SUC a` 
 by REWRITE_TAC[FACT,ADD_CLAUSES]
 >> (PROVE_TAC[MULT_ASSOC,MULT_SYM])
 ++ ASM_REWRITE_TAC[]
@@ -1075,9 +1082,9 @@ by REWRITE_TAC[FACT,ADD_CLAUSES]
 ++ `SUC a + SUC b = SUC (SUC (a + b))` by RW_TAC arith_ss [ADD_CLAUSES]
 ++ ASM_REWRITE_TAC[]
 ++ RW_TAC arith_ss []);
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_DEF6	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* --------------------------------------------------- *)
+(* 	BINOMIAL_DEF6	                               *)
+(* --------------------------------------------------- *)
 val BINOMIAL_DEF6 = store_thm("BINOMIAL_DEF6",
   ``!n. (binomial (SUC n) 1 = SUC n)``,
 RW_TAC std_ss []
@@ -1091,17 +1098,17 @@ RW_TAC std_ss []
 ++ STRIP_TAC
 ++ FULL_SIMP_TAC real_ss [EQ_MULT_LCANCEL]
 ++ METIS_TAC [FACT_LESS, NOT_ZERO_LT_ZERO]);
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_DEF7	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* --------------------------------------------------- *)
+(* 	BINOMIAL_DEF7	                               *)
+(* --------------------------------------------------- *)
 val BINOMIAL_DEF7 = store_thm("BINOMIAL_DEF7",
   ``!n k. 0 <= binomial n k``,
 Induct_on `n`
 ++ RW_TAC arith_ss [binomial_def]
 ++ RW_TAC arith_ss [binomial_def]);
-(* ------------------------------------------------------------------------- *)
-(* 	BINOMIAL_FACT	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* --------------------------------------------------- *)
+(* 	BINOMIAL_FACT	                               *)
+(* --------------------------------------------------- *)
 val BINOMIAL_FACT = store_thm("BINOMIAL_FACT",
   ``!a b. binomial (a+b) b * (FACT a * FACT b) = FACT (a+b)``,
 Induct_on `b`
@@ -1126,7 +1133,7 @@ by REWRITE_TAC[FACT,ADD_CLAUSES]
 ++ `SUC a + SUC b = SUC (SUC (a + b))` by RW_TAC arith_ss [ADD_CLAUSES]
 ++ ASM_REWRITE_TAC[]
 ++ RW_TAC arith_ss []);
-(* -----------------BINOMIAL_DEF2-------------------------------------------------------- *)
+(* -----------------BINOMIAL_DEF2--------------------------- *)
 val BINOMIAL_DEF2 = store_thm("BINOMIAL_DEF2",
   ``!n k. n < k ==> (binomial n k = 0)``,
 Induct_on `n`
@@ -1136,15 +1143,15 @@ Induct_on `n`
 ++ Cases_on `k`
 >> (RW_TAC real_ss [])
 ++ RW_TAC arith_ss [binomial_def]);
-(* -----------------BINOMIAL_DEF3-------------------------------------------------------- *)
+(* -----------------BINOMIAL_DEF3--------------------------- *)
 val BINOMIAL_DEF3 = store_thm("BINOMIAL_DEF3",
   ``!n. (binomial n n = 1)``,
 Induct_on `n` THEN REWRITE_TAC [binomial_def] THEN RW_TAC arith_ss [BINOMIAL_DEF2]);
-(* -----------------BINOMIAL_DEF4-------------------------------------------------------- *)
+(* -----------------BINOMIAL_DEF4--------------------------- *)
 val BINOMIAL_DEF4 = store_thm("BINOMIAL_DEF4",
   ``!n k. (binomial (SUC n) (SUC k) = binomial n (SUC k) + binomial n k)``,
 REWRITE_TAC [binomial_def]); 
-(* -----------------BINOMIAL_DEF6-------------------------------------------------------- *)
+(* -----------------BINOMIAL_DEF6--------------------------- *)
 val BINOMIAL_DEF6 = store_thm("BINOMIAL_DEF6",
   ``!n. (binomial (SUC n) 1 = SUC n)``,
 RW_TAC std_ss []
@@ -1158,9 +1165,9 @@ RW_TAC std_ss []
 ++ STRIP_TAC
 ++ FULL_SIMP_TAC real_ss [EQ_MULT_LCANCEL]
 ++ METIS_TAC [FACT_LESS, NOT_ZERO_LT_ZERO]);
-(* ------------------------------------------------------------------------- *)
-(* 	EXP_PASCAL_REAL	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* --------------------------------------------------------- *)
+(* 	EXP_PASCAL_REAL	                                     *)
+(* --------------------------------------------------------- *)
 val EXP_PASCAL_REAL = store_thm("EXP_PASCAL_REAL",
   ``!(a:real) (b:real) n. 
 ((a + b) pow n = REAL_SUM_IMAGE (\x. &(binomial n x) * a pow (n - x) * b pow x) (count (SUC n)))``,
@@ -1268,17 +1275,18 @@ sum (0,SUC (SUC n))
 ++ RW_TAC real_ss [REAL_EQ_LADD]
 ++ MATCH_MP_TAC SUM_EQ
 ++ RW_TAC real_ss [ADD1]);
-(* ------------------------------------------------------------------------- *)
-(* 	EXP_PASCAL_REAL1	                                             *)
-(* ------------------------------------------------------------------------- *)
+(* ---------------------------------------------------------- *)
+(* 	EXP_PASCAL_REAL1	                              *)
+(* ---------------------------------------------------------- *)
 val EXP_PASCAL_REAL1 = store_thm("EXP_PASCAL_REAL1",
   ``!(a:real) (b:real) n. 
-((a + b) pow n = sum_set (count (SUC n))  (\x. &(binomial n x) * a pow (n - x) * b pow x) )``,
+((a + b) pow n = 
+ sum_set (count (SUC n))  (\x. &(binomial n x) * a pow (n - x) * b pow x))``,
 RW_TAC std_ss[sum_set_def,EXP_PASCAL_REAL]);
 
-(*--------------------------------------------------------------------*)
+(*------------------------------------------------------------*)
 
-(*-----------------num_neq----------------------------------*)
+(*-----------------num_neq------------------------------------*)
  val num_neq = store_thm("num_neq",
   ``!a b:num.  (a <> b) = a < b \/ b < a``,
 RW_TAC std_ss []
@@ -1286,44 +1294,53 @@ RW_TAC std_ss []
 ++ EQ_TAC
 >> (RW_TAC arith_ss[])
 ++ RW_TAC arith_ss[]);
-(*------------------disj_thm------------------------*)
+(*------------------disj_thm---------------------------------*)
 val disj_thm = store_thm("disj_thm",
   ``!X (m:num) (n:num).(m <> n)==>  DISJOINT ((PREIMAGE X {Normal &m} INTER p_space p) ) ((PREIMAGE X {Normal &n} INTER p_space p) )``,
 RW_TAC std_ss [DISJOINT_ALT]
 ++ FULL_SIMP_TAC real_ss [IN_INTER,IN_PREIMAGE,IN_SING]
 ++ RW_TAC std_ss [DISJOINT_ALT]
 ++ FULL_SIMP_TAC real_ss [IN_INTER,IN_PREIMAGE,IN_SING]);
-(*--------------k_out_n_lemma1----------------------------*)
+
+
+(*--------------k_out_n_lemma1--------------------------*)
 val k_out_n_lemma1 = store_thm("k_out_n_lemma1",
   ``!p s n k.
-       prob_space p /\ ((\x. PREIMAGE X {Normal(&x)} INTER p_space p) IN ((count n) -> events p)) ==> ((IMAGE (\x. PREIMAGE X {Normal (&x)} INTER p_space p) (count n)) SUBSET events p)``,
+       prob_space p /\ 
+       ((\x. PREIMAGE X {Normal(&x)} INTER p_space p) IN ((count n) -> events p)) ==> 
+        ((IMAGE (\x. PREIMAGE X {Normal (&x)} INTER p_space p) (count n)) SUBSET events p)``,
 FULL_SIMP_TAC real_ss [IN_IMAGE,IN_FUNSET,IN_COUNT]
 ++ RW_TAC std_ss[]
 ++ RW_TAC std_ss[SUBSET_DEF]
 ++ FULL_SIMP_TAC real_ss [IN_IMAGE,IN_FUNSET,IN_COUNT]);
-(*------------------k_out_n_lemma2------------------------*)
+(*------------------k_out_n_lemma2---------------------*)
 val k_out_n_lemma2 = store_thm("k_out_n_lemma2",
-  ``!k n:num. {x |  k<= x /\ x < n} = {x |  k<= x } INTER {x |x < n}``,
+  ``!k n:num. 
+       {x |  k<= x /\ x < n} = {x |  k<= x } INTER {x |x < n}``,
 SRW_TAC[][EXTENSION,GSPECIFICATION,IN_INSERT]);
-(*----------------------k_out_ntemp1---------------------------------*)
+(*----------------------k_out_ntemp1-------------------*)
 val k_out_ntemp1 = store_thm("k_out_ntemp1",
-  ``!k n:num. n INSERT {x |  k<= x /\ x < n} =  n INSERT {x | x < n /\  k<= x }``,
+  ``!k n:num. 
+       n INSERT {x |  k <= x /\ x < n} =  
+       n INSERT {x | x < n /\  k <= x }``,
 SRW_TAC[][EXTENSION,GSPECIFICATION,IN_INSERT]
 ++ METIS_TAC[]);
-(*--------------------------k_out_n_temp2-----------------------------*)
+(*--------------------------k_out_n_temp2--------------*)
 val k_out_n_temp2 = store_thm("k_out_n_temp2",
-  ``!k n:num. {x |  x < n /\ k<= x  } = {x |x < n} INTER {x |  k<= x }``,
+  ``!k n:num. 
+       {x | x < n /\ k <= x} = {x |x < n} INTER {x | k <= x}``,
 SRW_TAC[][EXTENSION,GSPECIFICATION,IN_INSERT]);
 (*-------------------------------------------------------*)
 (*val k_out_n_temp1 = store_thm("k_out_n_temp1",
-  ``!k n:num.  {x |  k<= x /\ x < (SUC n)}  = n INSERT  {x |  k<= x /\ x < (n)}``,
+  ``!k n:num.  {x |  k <= x /\ x < (SUC n)}  = n INSERT  {x | k <= x /\ x < n}``,
 RW_TAC std_ss[k_out_ntemp1]
 ++ RW_TAC std_ss[k_out_n_temp2]
 ++ RW_TAC std_ss[GSYM count_def]
-++ ` n INSERT count n INTER {x | k ≤ x} =  (n INSERT count n) INTER {x | k ≤ x}` by ALL_TAC
+++ ` n INSERT count n INTER {x | k <= x} =  
+     (n INSERT count n) INTER {x | k <= x}` by ALL_TAC
 >> (RW_TAC std_ss[GSYM COUNT_SUC]
    ++ RW_TAC std_ss[]);
-e (KNOW_TAC (--`{x | k ≤ x /\ x < n} = {x |  x < n /\ k ≤ x}`--));
+e (KNOW_TAC (--`{x | k <= x /\ x < n} = {x |  x < n /\ k <= x}`--));
 e (SRW_TAC[][EXTENSION,GSPECIFICATION,IN_INSERT]);
 e (METIS_TAC[]);
 e (RW_TAC std_ss[k_out_ntemp1]);
@@ -1344,7 +1361,7 @@ GEN_TAC
 ++ RW_TAC std_ss[FINITE_COUNT]);
 (*------------------k_out_n_lemma4------------------------*)
 val k_out_n_lemma4 = store_thm("k_out_n_lemma4",
-  ``!k (n:num). (k < n) ==>  (({x | k <= x /\ x < n} ∪ count k) = count n)``,
+  ``!k (n:num). (k < n) ==>  (({x | k <= x /\ x < n} UNION count k) = count n)``,
 SRW_TAC[][EXTENSION,IN_COUNT,GSPECIFICATION,IN_UNION]
 ++ EQ_TAC
 >> (RW_TAC arith_ss[])
@@ -1352,9 +1369,13 @@ SRW_TAC[][EXTENSION,IN_COUNT,GSPECIFICATION,IN_UNION]
 (*---------------------k_out_n_temp5---------------------*)
 val k_out_n_temp5 = store_thm("k_out_n_temp5",
   ``!p n k X.
-       prob_space p /\ (k < (SUC n)) /\ (\x. PREIMAGE X {Normal(&x)} INTER p_space p) IN ((count (SUC n)) -> events p) /\
-       (s = BIGUNION (IMAGE (\x. PREIMAGE X {Normal (&x)} INTER p_space p) ({x|(k:num) <= x /\ x < (SUC n)}))) ==>
-       (sum (k, (SUC n)-k) (prob p o (\x. PREIMAGE X {Normal (&x)} INTER p_space p)) = prob p s)``,
+       prob_space p /\ 
+       (k < (SUC n)) /\ 
+       (\x. PREIMAGE X {Normal(&x)} INTER p_space p) IN ((count (SUC n)) -> events p) /\
+       (s = BIGUNION (IMAGE (\x. PREIMAGE X {Normal (&x)} INTER p_space p) ({x|(k:num) <= x /\ 
+       x < (SUC n)}))) ==>
+       	 (sum (k, (SUC n)-k) (prob p o (\x. PREIMAGE X {Normal (&x)} INTER p_space p)) = 
+       	  prob p s)``,
 RW_TAC std_ss []
 ++ ONCE_REWRITE_TAC[SUM_DIFF]
 ++ RW_TAC real_ss[]
@@ -1509,12 +1530,10 @@ val k_out_n_RBD_v1 = store_thm("k_out_n_RBD_v1",
        ((count (SUC n)) -> events p) /\
        (!x. (distribution p X {Normal (&x)} = 
        ((& binomial n x)* (pr pow x) * ((1- pr) pow (n - x))))) ==>
-       	  (prob p 
-	     (BIGUNION (IMAGE (\x. PREIMAGE X {Normal (&x)} INTER p_space p) 
-	     	       ({x|(k:num) <= x /\ x < (SUC n)}))) = 
+       	 (prob p (K_out_N_struct p X k n) = 
 	    sum (k, (SUC n)-k) 
-	    	(\x. (& binomial n x)* (pr pow x) * ((1- pr) pow (n - x) )))``,
-RW_TAC std_ss []
+	    	(\x. (& binomial n x) * (pr pow x) * ((1 - pr) pow (n - x) )))``,
+RW_TAC std_ss [K_out_N_struct_def]
 ++ MATCH_MP_TAC EQ_SYM
 ++ MATCH_MP_TAC  k_out_n_lemma6_new1
 ++ EXISTS_TAC (--`X: ('a -> extreal)`--)

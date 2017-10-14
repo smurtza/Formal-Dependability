@@ -202,7 +202,8 @@ REPEAT STRIP_TAC THEN REWRITE_TAC[rel_pipeline_z1_def] THEN
         {x | 2 <= x /\ x < SUC 3})) = 
 	sum (2,SUC 3 − 2)
         (\x. &binomial 3 x * (pipeline p' (rel_event_list p' L t)) pow x * 
-		(1 − (pipeline p' (rel_event_list p' L t))) pow (3 − x)) ` by MATCH_MP_TAC k_out_n_RBD_v1)  THEN1
+		(1 − (pipeline p' (rel_event_list p' L t))) pow (3 − x)) ` by (REWRITE_TAC[GSYM K_out_N_struct_def]
+THEN MATCH_MP_TAC k_out_n_RBD_v1)) THEN1
 (RW_TAC std_ss[] THEN ONCE_ASM_REWRITE_TAC[]) THEN POP_ORW THEN
 RW_TAC real_ss[] THEN ONCE_REWRITE_TAC[TWO] THEN 
 RW_TAC std_ss[sum] THEN ONCE_REWRITE_TAC[ONE] THEN RW_TAC std_ss[sum] THEN  
