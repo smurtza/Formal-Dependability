@@ -29,7 +29,7 @@ To use the proof script, follow the steps below:
 	(Follow the steps mentioned in http://save.seecs.nust.edu.pk/Downloads/Installation%20of%20HOL%20&%20HOL-LIGHT%20in%20Linux.pdf) 
  
 2) Open Emacs and load the file "hol-mode.el" 
-	(ALT-x load-file <PATH to HOL folder>/tools/hol-mode.el)
+	(ALT-x load-file \<PATH to HOL folder\>/tools/hol-mode.el)
 
 3) Enter ALT+H 3, windows split into two and the hol starts
 
@@ -37,7 +37,7 @@ To use the proof script, follow the steps below:
 
 2) Open the auto_smart_grid.ml. 
 
-3) Load directory path to HOL shell. loadPath := "<PATH to HOL script files>/Formal-Dependability" :: !loadPath; 
+3) Load directory path to HOL shell. loadPath := "\<PATH to HOL script files\>/Formal-Dependability" :: !loadPath; 
 
 4) Run the script in HOL shell
 
