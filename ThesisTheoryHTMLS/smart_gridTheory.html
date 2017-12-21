@@ -1,0 +1,601 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head><title>Theory: smart_grid</title><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<style type="text/css">
+<!--
+  body {background: #faf0e6; color: #191970; }
+  span.freevar  { color: blue}
+  span.boundvar { color: green}
+  span.typevar  { color: purple}
+  span.type     { color: teal}
+  span.strong   { color: black; font-weight: bold}
+  span.vstrong  { color: black; 
+                  font-weight: bold;
+                  font-size: larger}
+  h1 {color: black}
+  th {color: crimson}
+-->
+</style>
+</head>
+<body>
+<h1>Theory "smart_grid"</h1>
+<span class="vstrong">Parents</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href = "ASN_gatewayTheory.html"><span class="strong">ASN_gateway</span></a>
+
+<h1>Signature</h1>
+<center>
+<table BORDER=4 CELLPADDING=10 CELLSPACING=1>
+
+    <tr>
+    <th>
+    Constant
+    <th>
+    Type<tr><td>
+            <span class="strong">G1_FT</span>
+            <td>
+            :α event # α event event # (α event -> real) ->
+             real ->
+             (α -> extreal) ->
+             (α -> extreal) ->
+             (α -> extreal) -> (α -> extreal) -> (α -> extreal) -> α gate
+    <tr><td>
+        <span class="strong">G2_FT</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         real ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) -> (α -> extreal) -> (α -> extreal) -> α gate
+    <tr><td>
+        <span class="strong">G3_FT</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         real ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) -> (α -> extreal) -> (α -> extreal) -> α gate
+    <tr><td>
+        <span class="strong">G4_FT</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         real ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) -> (α -> extreal) -> (α -> extreal) -> α gate
+    <tr><td>
+        <span class="strong">K_out_N_struct_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list -> num -> num -> α event list
+    <tr><td>
+        <span class="strong">SABP_FT</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         real ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) ->
+         (α -> extreal) -> (α -> extreal) -> (α -> extreal) -> α event
+    <tr><td> <span class="strong">UNIONL</span> <td> :α event list -> α event
+    <tr><td>
+        <span class="strong">binomial_conds</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) ->
+         (α -> extreal) -> num -> num -> (α -> extreal) list -> real event
+    <tr><td>
+        <span class="strong">binomial_distr</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> num -> real event
+    <tr><td>
+        <span class="strong">binomial_event</span>
+        <td>
+        :(α -> extreal) -> num -> α event
+    <tr><td>
+        <span class="strong">binomial_event_list</span>
+        <td>
+        :(α -> extreal) list -> num -> α event list
+    <tr><td>
+        <span class="strong">casc_series_RBD</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) ->
+         (α -> extreal) list -> (α -> extreal) -> real -> α event
+    <tr><td>
+        <span class="strong">in_events</span>
+        <td>
+        :α event # α event event # (α event -> real) -> α event list event
+    <tr><td>
+        <span class="strong">in_events_k_out_n</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> num event
+    <tr><td>
+        <span class="strong">k_out_n_event</span>
+        <td>
+        :β -> (α -> extreal) -> num -> num -> α event
+    <tr><td> <span class="strong">not_null</span> <td> :α list list event
+    <tr><td>
+        <span class="strong">rbd_conds</span>
+        <td>
+        :α event # α event event # (α event -> real) -> α event list event
+    <tr><td>
+        <span class="strong">redund_star_ring_RBD</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) ->
+         (α -> extreal) list list -> (α -> extreal) -> real -> α event
+
+</table>
+</center>
+
+<h1>Definitions</h1>
+<DL>
+<DT><span class="strong">UNIONL_def</span>
+<DD>
+<pre>
+|- (UNIONL [] = ∅) ∧ ∀s ss. UNIONL (s::ss) = s ∪ UNIONL ss
+</pre>
+
+<DT><span class="strong">in_events_def</span>
+<DD>
+<pre>
+|- ∀p L. in_events p L ⇔ ∀x. MEM x L ⇒ x ∈ events p
+</pre>
+
+<DT><span class="strong">not_null_def</span>
+<DD>
+<pre>
+|- ∀L. not_null L ⇔ ∀x. MEM x L ⇒ ¬NULL x
+</pre>
+
+<DT><span class="strong">in_events_k_out_n_def</span>
+<DD>
+<pre>
+|- ∀p X n.
+     in_events_k_out_n p X n ⇔
+     (λx. PREIMAGE X {Normal (&x)}) ∈ (count (SUC n) -> events p)
+</pre>
+
+<DT><span class="strong">k_out_n_event_def</span>
+<DD>
+<pre>
+|- ∀p X k n.
+     k_out_n_event p X k n =
+     PREIMAGE X (BIGUNION {{Normal (&x)} | k ≤ x ∧ x < SUC n})
+</pre>
+
+<DT><span class="strong">binomial_distr_def</span>
+<DD>
+<pre>
+|- ∀p X n pr.
+     binomial_distr p X n pr ⇔
+     ∀x.
+       distribution p X {Normal (&x)} =
+       &binomial n x * pr pow x * (1 − pr) pow (n − x)
+</pre>
+
+<DT><span class="strong">casc_series_RBD_def</span>
+<DD>
+<pre>
+|- ∀p PIED ESW_list CIED t.
+     casc_series_RBD p PIED ESW_list CIED t =
+     rbd_struct p
+       (series (rbd_list (rel_event_list p ([PIED] ++ ESW_list ++ [CIED]) t)))
+</pre>
+
+<DT><span class="strong">redund_star_ring_RBD_def</span>
+<DD>
+<pre>
+|- ∀p PIED list_ESW_list CIED t.
+     redund_star_ring_RBD p PIED list_ESW_list CIED t =
+     rbd_struct p
+       ((series of (λa. parallel (rbd_list (rel_event_list p a t))))
+          ([[PIED]] ++ list_ESW_list ++ [[CIED]]))
+</pre>
+
+<DT><span class="strong">G1_FT_def</span>
+<DD>
+<pre>
+|- ∀p t SW1 L1_220 L2_220 L3_220 L4_220.
+     G1_FT p t SW1 L1_220 L2_220 L3_220 L4_220 =
+     AND
+       (gate_list (fail_event_list p [SW1; L1_220; L2_220; L3_220; L4_220] t))
+</pre>
+
+<DT><span class="strong">G2_FT_def</span>
+<DD>
+<pre>
+|- ∀p t SW1 L1_220 L2_220 L3_220 L4_220.
+     G2_FT p t SW1 L1_220 L2_220 L3_220 L4_220 =
+     AND
+       (gate_list (fail_event_list p [SW1; L1_220; L2_220; L3_220; L4_220] t))
+</pre>
+
+<DT><span class="strong">G3_FT_def</span>
+<DD>
+<pre>
+|- ∀p t SW2 T1_220 T2_220 BUS_220 SS_220.
+     G3_FT p t SW2 T1_220 T2_220 BUS_220 SS_220 =
+     AND
+       (gate_list
+          (fail_event_list p [SW2; T1_220; T2_220; BUS_220; SS_220] t))
+</pre>
+
+<DT><span class="strong">G4_FT_def</span>
+<DD>
+<pre>
+|- ∀p t SW2 T1_220 T2_220 BUS_220 SS_220.
+     G4_FT p t SW2 T1_220 T2_220 BUS_220 SS_220 =
+     AND
+       (gate_list
+          (fail_event_list p [SW2; T1_220; T2_220; BUS_220; SS_220] t))
+</pre>
+
+<DT><span class="strong">SABP_FT_def</span>
+<DD>
+<pre>
+|- ∀p t SW1 SW2 L1_220 L2_220 L3_220 L4_220 T1_220 T2_220 BUS_220 SS_220.
+     SABP_FT p t SW1 SW2 L1_220 L2_220 L3_220 L4_220 T1_220 T2_220 BUS_220
+       SS_220 =
+     FTree p
+       (AND
+          [OR
+             [G1_FT p t SW1 L1_220 L2_220 L3_220 L4_220;
+              G2_FT p t SW1 L1_220 L2_220 L3_220 L4_220];
+           OR
+             [G3_FT p t SW2 T1_220 T2_220 BUS_220 SS_220;
+              G4_FT p t SW2 T1_220 T2_220 BUS_220 SS_220]])
+</pre>
+
+<DT><span class="strong">binomial_event_def</span>
+<DD>
+<pre>
+|- ∀X a. binomial_event X a = PREIMAGE X {Normal (&a)}
+</pre>
+
+<DT><span class="strong">binomial_event_list_def</span>
+<DD>
+<pre>
+|- ∀L m. binomial_event_list L m = MAP (λa. binomial_event a m) L
+</pre>
+
+<DT><span class="strong">binomial_conds_def</span>
+<DD>
+<pre>
+|- ∀p X X1 k n L t.
+     binomial_conds p X X1 k n L t ⇔
+     k < SUC n ∧ (∀x. x < SUC n ⇒ in_events p (binomial_event_list L x)) ∧
+     ∀x.
+       distribution p X {Normal (&x)} =
+       &binomial n x * Reliability p X1 t pow x *
+       (1 − Reliability p X1 t) pow (n − x)
+</pre>
+
+<DT><span class="strong">K_out_N_struct_list_def</span>
+<DD>
+<pre>
+|- ∀p L k n. K_out_N_struct_list p L k n = MAP (λa. K_out_N_struct p a k n) L
+</pre>
+
+<DT><span class="strong">rbd_conds_def</span>
+<DD>
+<pre>
+|- ∀p L. rbd_conds p L ⇔ prob_space p ∧ in_events p L ∧ mutual_indep p L
+</pre>
+
+</DL>
+
+
+<hr>
+
+<hr>
+<h1>Theorems</h1>
+<DL>
+<DT><span class="strong">IN_UNIONL</span>
+<DD>
+<pre>
+|- ∀l v. v ∈ UNIONL l ⇔ ∃s. MEM s l ∧ v ∈ s
+</pre>
+
+<DT><span class="strong">rel_casc_seriesRBD</span>
+<DD>
+<pre>
+|- ∀p t PIED ESW_list CIED C_PIED C_ESW_list C_CIED.
+     0 ≤ t ∧ prob_space p ∧ ¬NULL ESW_list ∧
+     exp_dist_list p ([PIED] ++ ESW_list ++ [CIED])
+       ([C_PIED] ++ C_ESW_list ++ [C_CIED]) ∧
+     (LENGTH C_ESW_list = LENGTH ESW_list) ∧
+     mutual_indep p (rel_event_list p ([PIED] ++ ESW_list ++ [CIED]) t) ∧
+     (∀x.
+        MEM x (rel_event_list p ([PIED] ++ ESW_list ++ [CIED]) t) ⇒
+        x ∈ events p) ⇒
+     (prob p (casc_series_RBD p PIED ESW_list CIED t) =
+      list_prod (exp_func_list ([C_PIED] ++ C_ESW_list ++ [C_CIED]) t))
+</pre>
+
+<DT><span class="strong">len_EL_lem1</span>
+<DD>
+<pre>
+|- ∀h1 h2 c1 c2 L C n.
+     (LENGTH L = LENGTH C) ∧ n < LENGTH L + 2 ∧
+     (∀n. n < LENGTH L ∧ n < LENGTH C ⇒ (LENGTH (EL n L) = LENGTH (EL n C))) ⇒
+     (LENGTH (EL n ([h1]::(L ++ [[h2]]))) =
+      LENGTH (EL n ([c1]::(C ++ [[c2]]))))
+</pre>
+
+<DT><span class="strong">rel_redund_star_ringRBD</span>
+<DD>
+<pre>
+|- ∀p t PIED list_ESW_list CIED C_PIED C_list_ESW_list C_CIED.
+     (∀z. MEM z list_ESW_list ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'.
+        MEM x'
+          (FLAT
+             (two_dim_rel_event_list p ([[PIED]] ++ list_ESW_list ++ [[CIED]])
+                t)) ⇒
+        x' ∈ events p) ∧
+     mutual_indep p
+       (FLAT
+          (two_dim_rel_event_list p ([[PIED]] ++ list_ESW_list ++ [[CIED]])
+             t)) ∧ (LENGTH C_list_ESW_list = LENGTH list_ESW_list) ∧
+     (∀n.
+        n < LENGTH list_ESW_list ∧ n < LENGTH C_list_ESW_list ⇒
+        (LENGTH (EL n list_ESW_list) = LENGTH (EL n C_list_ESW_list))) ∧
+     two_dim_exp_dist_list p ([[PIED]] ++ list_ESW_list ++ [[CIED]])
+       ([[C_PIED]] ++ C_list_ESW_list ++ [[C_CIED]]) ⇒
+     (prob p (redund_star_ring_RBD p PIED list_ESW_list CIED t) =
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        ([[C_PIED]] ++ C_list_ESW_list ++ [[C_CIED]]))
+</pre>
+
+<DT><span class="strong">SABP_FT_alt_form</span>
+<DD>
+<pre>
+|- ∀A B C D. (A ∪ B) ∩ (C ∪ D) = A ∩ C ∪ A ∩ D ∪ B ∩ C ∪ B ∩ D
+</pre>
+
+<DT><span class="strong">SABP_FT_alt_form1</span>
+<DD>
+<pre>
+|- ∀p t SW1 SW2 L1_220 L2_220 L3_220 L4_220 T1_220 T2_220 BUS_220 SS_220.
+     prob_space p ⇒
+     (SABP_FT p t SW1 SW2 L1_220 L2_220 L3_220 L4_220 T1_220 T2_220 BUS_220
+        SS_220 =
+      rbd_struct p
+        ((parallel of (λa. series (rbd_list a)))
+           (list_fail_event_list p
+              [[SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+                BUS_220; SS_220];
+               [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+                BUS_220; SS_220];
+               [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+                BUS_220; SS_220];
+               [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+                BUS_220; SS_220]] t)))
+</pre>
+
+<DT><span class="strong">fail_prob_SABP_FT_lem1</span>
+<DD>
+<pre>
+|- ∀p t SW1 SW2 L1_220 L2_220 L3_220 L4_220 T1_220 T2_220 BUS_220 SS_220 C_SW1
+      C_SW2 C_L1_220 C_L2_220 C_L3_220 C_L4_220 C_T1_220 C_T2_220 C_BUS_220
+      C_SS_220.
+     0 ≤ t ∧ prob_space p ∧
+     list_exp p
+       [C_SW1; C_SW2; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_T1_220;
+        C_T2_220; C_BUS_220; C_SS_220]
+       [SW1; SW2; L1_220; L2_220; L3_220; L4_220; T1_220; T2_220; BUS_220;
+        SS_220] ⇒
+     (list_prod
+        (one_minus_list
+           (list_prod_rel p
+              (list_fail_event_list p
+                 [[SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+                   BUS_220; SS_220];
+                  [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+                   BUS_220; SS_220];
+                  [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+                   BUS_220; SS_220];
+                  [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+                   BUS_220; SS_220]] t))) =
+      list_prod
+        (one_minus_exp_prod t
+           [[C_SW1; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_SW2; C_T1_220;
+             C_T2_220; C_BUS_220; C_SS_220];
+            [C_SW1; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_SW2; C_T1_220;
+             C_T2_220; C_BUS_220; C_SS_220];
+            [C_SW1; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_SW2; C_T1_220;
+             C_T2_220; C_BUS_220; C_SS_220];
+            [C_SW1; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_SW2; C_T1_220;
+             C_T2_220; C_BUS_220; C_SS_220]]))
+</pre>
+
+<DT><span class="strong">fail_prob_SABP_FT</span>
+<DD>
+<pre>
+|- ∀p t SW1 SW2 L1_220 L2_220 L3_220 L4_220 T1_220 T2_220 BUS_220 SS_220 C_SW1
+      C_SW2 C_L1_220 C_L2_220 C_L3_220 C_L4_220 C_T1_220 C_T2_220 C_BUS_220
+      C_SS_220.
+     0 ≤ t ∧ prob_space p ∧
+     (∀x'.
+        MEM x'
+          (fail_event_list p
+             [SW1; SW2; L1_220; L2_220; L3_220; L4_220; T1_220; T2_220;
+              BUS_220; SS_220] t) ⇒
+        x' ∈ events p) ∧
+     mutual_indep p
+       (FLAT
+          (list_fail_event_list p
+             [[SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+               BUS_220; SS_220];
+              [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+               BUS_220; SS_220];
+              [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+               BUS_220; SS_220];
+              [SW1; L1_220; L2_220; L3_220; L4_220; SW2; T1_220; T2_220;
+               BUS_220; SS_220]] t)) ∧
+     list_exp p
+       [C_SW1; C_SW2; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_T1_220;
+        C_T2_220; C_BUS_220; C_SS_220]
+       [SW1; SW2; L1_220; L2_220; L3_220; L4_220; T1_220; T2_220; BUS_220;
+        SS_220] ⇒
+     (prob p
+        (SABP_FT p t SW1 SW2 L1_220 L2_220 L3_220 L4_220 T1_220 T2_220 BUS_220
+           SS_220) =
+      1 −
+      list_prod
+        (one_minus_exp_prod t
+           [[C_SW1; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_SW2; C_T1_220;
+             C_T2_220; C_BUS_220; C_SS_220];
+            [C_SW1; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_SW2; C_T1_220;
+             C_T2_220; C_BUS_220; C_SS_220];
+            [C_SW1; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_SW2; C_T1_220;
+             C_T2_220; C_BUS_220; C_SS_220];
+            [C_SW1; C_L1_220; C_L2_220; C_L3_220; C_L4_220; C_SW2; C_T1_220;
+             C_T2_220; C_BUS_220; C_SS_220]]))
+</pre>
+
+<DT><span class="strong">k_out_n_alt</span>
+<DD>
+<pre>
+|- ∀p X k n.
+     prob_space p ∧
+     (λx. PREIMAGE X {Normal (&x)}) ∈ (count (SUC n) -> events p) ⇒
+     (K_out_N_struct p X k n =
+      BIGUNION (IMAGE (PREIMAGE X) {{Normal (&x)} | k ≤ x ∧ x < SUC n}))
+</pre>
+
+<DT><span class="strong">k_out_n_RBD_v2</span>
+<DD>
+<pre>
+|- ∀p n k X pr.
+     prob_space p ∧ k < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)}) ∈ (count (SUC n) -> events p) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial n x * pr pow x * (1 − pr) pow (n − x)) ⇒
+     (prob p (K_out_N_struct p X k n) =
+      sum (k,SUC n − k) (λx. &binomial n x * pr pow x * (1 − pr) pow (n − x)))
+</pre>
+
+<DT><span class="strong">bigunion_in_events</span>
+<DD>
+<pre>
+|- ∀p n k X.
+     prob_space p ∧
+     (λx. PREIMAGE X {Normal (&x)}) ∈ (count (SUC n) -> events p) ⇒
+     BIGUNION
+       (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+          {x | k ≤ x ∧ x < SUC n}) ∈ events p
+</pre>
+
+<DT><span class="strong">series_rbd_indep_k_out_n_rbd</span>
+<DD>
+<pre>
+|- ∀p L n k X pr.
+     prob_space p ∧ ¬NULL L ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ∧
+     mutual_indep p
+       (L ++ [PREIMAGE X (BIGUNION {{Normal (&x)} | k ≤ x ∧ x < SUC n})]) ∧
+     k < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)}) ∈ (count (SUC n) -> events p) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial n x * pr pow x * (1 − pr) pow (n − x)) ⇒
+     (prob p (rbd_struct p (series (rbd_list L)) ∩ K_out_N_struct p X k n) =
+      list_prod (list_prob p L) *
+      sum (k,SUC n − k) (λx. &binomial n x * pr pow x * (1 − pr) pow (n − x)))
+</pre>
+
+<DT><span class="strong">parallel_rbd_indep_k_out_n_rbd</span>
+<DD>
+<pre>
+|- ∀p L1 L n k pr.
+     prob_space p ∧ mutual_indep p (FLAT (K_out_N_struct_list p L1 k n::L)) ∧
+     in_events p (FLAT L) ∧
+     (∀k. k < SUC n ⇒ in_events p (binomial_event_list L1 k)) ∧ not_null L ∧
+     ¬NULL (K_out_N_struct_list p L1 k n) ⇒
+     (prob p
+        (rbd_struct p (parallel (rbd_list (K_out_N_struct_list p L1 k n))) ∩
+         rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L))) =
+      (1 −
+       list_prod
+         (one_minus_list (list_prob p (K_out_N_struct_list p L1 k n)))) *
+      (list_prod of (λa. 1 − list_prod (one_minus_list (list_prob p a)))) L)
+</pre>
+
+<DT><span class="strong">parallel_rbd_indep_k_out_n_rbd_v1</span>
+<DD>
+<pre>
+|- ∀p L1 L n k pr.
+     prob_space p ∧ mutual_indep p (FLAT (K_out_N_struct_list p L1 k n::L)) ∧
+     in_events p (FLAT L) ∧
+     (∀k. k < SUC n ⇒ in_events p (binomial_event_list L1 k)) ∧ not_null L ∧
+     ¬NULL (K_out_N_struct_list p L1 k n) ⇒
+     (prob p
+        (rbd_struct p (parallel (rbd_list (K_out_N_struct_list p L1 k n))) ∩
+         rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L))) =
+      (1 −
+       list_prod
+         (one_minus_list (list_prob p (K_out_N_struct_list p L1 k n)))) *
+      prob p (rbd_struct p ((series of (λa. parallel (rbd_list a))) L)))
+</pre>
+
+<DT><span class="strong">series_parallel_rbd_indep_k_out_n_rbd_exp_dist</span>
+<DD>
+<pre>
+|- ∀p PIED ESW1 ESW2 ESW3 ESW4 ESWs CIED X_bino C_PIED C_ESW1 C_ESW2 C_ESW3
+      C_ESW4 C_ESWs C_CIED t.
+     0 ≤ t ∧ prob_space p ∧
+     mutual_indep p
+       (FLAT
+          (K_out_N_struct_list p [X_bino; X_bino] 3 4::
+               two_dim_rel_event_list p
+                 [[PIED]; [ESW1; ESW2]; [ESW3; ESW4]; [CIED]] t)) ∧
+     in_events p
+       (FLAT
+          (two_dim_rel_event_list p
+             [[PIED]; [ESW1; ESW2]; [ESW3; ESW4]; [CIED]] t)) ∧
+     (∀x. x < SUC 4 ⇒ in_events p (binomial_event_list [X_bino; X_bino] x)) ∧
+     (∀x.
+        distribution p X_bino {Normal (&x)} =
+        &binomial 4 x * Reliability p ESWs t pow x *
+        (1 − Reliability p ESWs t) pow (4 − x)) ∧ exp_dist p ESWs C_ESWs ∧
+     two_dim_exp_dist_list p [[PIED]; [ESW1; ESW2]; [ESW3; ESW4]; [CIED]]
+       [[C_PIED]; [C_ESW1; C_ESW2]; [C_ESW3; C_ESW4]; [C_CIED]] ⇒
+     (prob p
+        (rbd_struct p
+           (parallel
+              (rbd_list (K_out_N_struct_list p [X_bino; X_bino] 3 4))) ∩
+         rbd_struct p
+           (series
+              (MAP (λa. parallel (rbd_list a))
+                 (two_dim_rel_event_list p
+                    [[PIED]; [ESW1; ESW2]; [ESW3; ESW4]; [CIED]] t)))) =
+      (1 −
+       (1 −
+        sum (3,SUC 4 − 3)
+          (λx.
+             &binomial 4 x * exp (-C_ESWs * t) pow x *
+             (1 − exp (-C_ESWs * t)) pow (4 − x))) *
+       (1 −
+        sum (3,SUC 4 − 3)
+          (λx.
+             &binomial 4 x * exp (-C_ESWs * t) pow x *
+             (1 − exp (-C_ESWs * t)) pow (4 − x)))) *
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        [[C_PIED]; [C_ESW1; C_ESW2]; [C_ESW3; C_ESW4]; [C_CIED]])
+</pre>
+
+</DL>
+
+
+
+<hr>
+</body>
+</html>

@@ -1,0 +1,910 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head><title>Theory: VDC</title><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<style type="text/css">
+<!--
+  body {background: #faf0e6; color: #191970; }
+  span.freevar  { color: blue}
+  span.boundvar { color: green}
+  span.typevar  { color: purple}
+  span.type     { color: teal}
+  span.strong   { color: black; font-weight: bold}
+  span.vstrong  { color: black; 
+                  font-weight: bold;
+                  font-size: larger}
+  h1 {color: black}
+  th {color: crimson}
+-->
+</style>
+</head>
+<body>
+<h1>Theory "VDC"</h1>
+<span class="vstrong">Parents</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href = "RBDTheory.html"><span class="strong">RBD</span></a>
+
+<h1>Signature</h1>
+<center>
+<table BORDER=4 CELLPADDING=10 CELLSPACING=1>
+
+    <tr>
+    <th>
+    Constant
+    <th>
+    Type<tr><td>
+            <span class="strong">CDF</span>
+            <td>
+            :α event # α event event # (α event -> real) ->
+             (α -> extreal) -> real -> real
+    <tr><td>
+        <span class="strong">Reliability</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> real -> real
+    <tr><td> <span class="strong">UNIONL</span> <td> :α event list -> α event
+    <tr><td>
+        <span class="strong">cloud_server_fail_rate_list</span>
+        <td>
+        :real list list -> num -> num -> real list list list list
+    <tr><td>
+        <span class="strong">cloud_server_rv_list</span>
+        <td>
+        :α -> num -> num -> α list list
+    <tr><td>
+        <span class="strong">exp_dist</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> real event
+    <tr><td>
+        <span class="strong">exp_dist_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list -> real list event
+    <tr><td>
+        <span class="strong">exp_func_list</span>
+        <td>
+        :real list -> real -> real list
+    <tr><td>
+        <span class="strong">fail_event</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> real -> α event
+    <tr><td>
+        <span class="strong">four_dim_exp_dist_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list list list -> real list list list list event
+    <tr><td>
+        <span class="strong">four_dim_rel_event_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list list list ->
+         real -> α event list list list list
+    <tr><td> <span class="strong">gen_list</span> <td> :α -> num -> α list
+    <tr><td>
+        <span class="strong">gen_rv_list</span>
+        <td>
+        :(α -> extreal) -> num -> (α -> extreal) list
+    <tr><td> <span class="strong">log_base</span> <td> :real -> real -> real
+    <tr><td>
+        <span class="strong">rel_event</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> real -> α event
+    <tr><td>
+        <span class="strong">rel_event_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list -> real -> α event list
+    <tr><td>
+        <span class="strong">rel_virt_cloud_server</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list -> real -> real
+    <tr><td>
+        <span class="strong">three_dim_exp_dist_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list list -> real list list list event
+    <tr><td>
+        <span class="strong">three_dim_rel_event_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list list -> real -> α event list list list
+    <tr><td>
+        <span class="strong">two_dim_exp_dist_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list -> real list list event
+    <tr><td>
+        <span class="strong">two_dim_rel_event_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list -> real -> α event list list
+
+</table>
+</center>
+
+<h1>Definitions</h1>
+<DL>
+<DT><span class="strong">UNIONL_def</span>
+<DD>
+<pre>
+|- (UNIONL [] = ∅) ∧ ∀s ss. UNIONL (s::ss) = s ∪ UNIONL ss
+</pre>
+
+<DT><span class="strong">fail_event_def</span>
+<DD>
+<pre>
+|- ∀p X t. fail_event p X t = PREIMAGE X {y | y ≤ Normal t} ∩ p_space p
+</pre>
+
+<DT><span class="strong">rel_event_def</span>
+<DD>
+<pre>
+|- ∀p X t. rel_event p X t = PREIMAGE X {y | Normal t < y} ∩ p_space p
+</pre>
+
+<DT><span class="strong">rel_event_list_def</span>
+<DD>
+<pre>
+|- ∀p L t.
+     rel_event_list p L t =
+     MAP (λa. PREIMAGE a {y | Normal t < y} ∩ p_space p) L
+</pre>
+
+<DT><span class="strong">two_dim_rel_event_list_def</span>
+<DD>
+<pre>
+|- ∀p L t. two_dim_rel_event_list p L t = MAP (λa. rel_event_list p a t) L
+</pre>
+
+<DT><span class="strong">three_dim_rel_event_list_def</span>
+<DD>
+<pre>
+|- ∀p L t.
+     three_dim_rel_event_list p L t = MAP (λa. two_dim_rel_event_list p a t) L
+</pre>
+
+<DT><span class="strong">four_dim_rel_event_list_def</span>
+<DD>
+<pre>
+|- ∀p L t.
+     four_dim_rel_event_list p L t =
+     MAP (λa. three_dim_rel_event_list p a t) L
+</pre>
+
+<DT><span class="strong">log_base_def</span>
+<DD>
+<pre>
+|- ∀b x. log_base b x = ln x / ln b
+</pre>
+
+<DT><span class="strong">gen_list_def</span>
+<DD>
+<pre>
+|- (∀L. gen_list L 0 = []) ∧ ∀L n. gen_list L (SUC n) = SNOC L (gen_list L n)
+</pre>
+
+<DT><span class="strong">cloud_server_fail_rate_list_def</span>
+<DD>
+<pre>
+|- ∀L m n. cloud_server_fail_rate_list L m n = gen_list (gen_list L m) n
+</pre>
+
+<DT><span class="strong">cloud_server_rv_list_def</span>
+<DD>
+<pre>
+|- ∀L m n. cloud_server_rv_list L m n = gen_list (gen_list L m) n
+</pre>
+
+<DT><span class="strong">CDF_def</span>
+<DD>
+<pre>
+|- ∀p X t. CDF p X t = distribution p X {y | y ≤ Normal t}
+</pre>
+
+<DT><span class="strong">Reliability_def</span>
+<DD>
+<pre>
+|- ∀p X t. Reliability p X t = 1 − CDF p X t
+</pre>
+
+<DT><span class="strong">rel_virt_cloud_server_def</span>
+<DD>
+<pre>
+|- ∀p L t.
+     rel_virt_cloud_server p L t =
+     prob p
+       (rbd_struct p
+          ((series of (λa. parallel (rbd_list (rel_event_list p a t)))) L))
+</pre>
+
+<DT><span class="strong">exp_func_list_def</span>
+<DD>
+<pre>
+|- ∀C t. exp_func_list C t = MAP (λa. exp (-(a * t))) C
+</pre>
+
+<DT><span class="strong">exp_dist_def</span>
+<DD>
+<pre>
+|- ∀p X l.
+     exp_dist p X l ⇔ ∀t. CDF p X t = if 0 ≤ t then 1 − exp (-l * t) else 0
+</pre>
+
+<DT><span class="strong">exp_dist_list_def</span>
+<DD>
+<pre>
+|- (∀p L. exp_dist_list p [] L ⇔ T) ∧
+   ∀p h t L.
+     exp_dist_list p (h::t) L ⇔ exp_dist p h (HD L) ∧ exp_dist_list p t (TL L)
+</pre>
+
+<DT><span class="strong">two_dim_exp_dist_list_def</span>
+<DD>
+<pre>
+|- (∀p L. two_dim_exp_dist_list p [] L ⇔ T) ∧
+   ∀p h t L.
+     two_dim_exp_dist_list p (h::t) L ⇔
+     exp_dist_list p h (HD L) ∧ two_dim_exp_dist_list p t (TL L)
+</pre>
+
+<DT><span class="strong">three_dim_exp_dist_list_def</span>
+<DD>
+<pre>
+|- (∀p L. three_dim_exp_dist_list p [] L ⇔ T) ∧
+   ∀p h t L.
+     three_dim_exp_dist_list p (h::t) L ⇔
+     two_dim_exp_dist_list p h (HD L) ∧ three_dim_exp_dist_list p t (TL L)
+</pre>
+
+<DT><span class="strong">four_dim_exp_dist_list_def</span>
+<DD>
+<pre>
+|- (∀p L. four_dim_exp_dist_list p [] L ⇔ T) ∧
+   ∀p h t L.
+     four_dim_exp_dist_list p (h::t) L ⇔
+     three_dim_exp_dist_list p h (HD L) ∧ four_dim_exp_dist_list p t (TL L)
+</pre>
+
+<DT><span class="strong">gen_rv_list_def</span>
+<DD>
+<pre>
+|- ∀X n. gen_rv_list X n = gen_list X n
+</pre>
+
+</DL>
+
+
+<hr>
+
+<hr>
+<h1>Theorems</h1>
+<DL>
+<DT><span class="strong">IN_UNIONL</span>
+<DD>
+<pre>
+|- ∀l v. v ∈ UNIONL l ⇔ ∃s. MEM s l ∧ v ∈ s
+</pre>
+
+<DT><span class="strong">gen_list_def_compute</span>
+<DD>
+<pre>
+|- (∀L. gen_list L 0 = []) ∧
+   (∀L n.
+      gen_list L (NUMERAL (BIT1 n)) =
+      SNOC L (gen_list L (NUMERAL (BIT1 n) − 1))) ∧
+   ∀L n.
+     gen_list L (NUMERAL (BIT2 n)) = SNOC L (gen_list L (NUMERAL (BIT1 n)))
+</pre>
+
+<DT><span class="strong">not_null_map</span>
+<DD>
+<pre>
+|- ∀f l. ¬NULL l ⇒ ¬NULL (MAP f l)
+</pre>
+
+<DT><span class="strong">extreal_not_le</span>
+<DD>
+<pre>
+|- ∀x y. ¬(x < y) ⇔ ¬ ¬(y ≤ x)
+</pre>
+
+<DT><span class="strong">compl_rel_event_eq_fail_event</span>
+<DD>
+<pre>
+|- ∀p t s.
+     prob_space p ⇒
+     (p_space p DIFF PREIMAGE s {y | Normal t < y} ∩ p_space p =
+      PREIMAGE s {y | y ≤ Normal t} ∩ p_space p)
+</pre>
+
+<DT><span class="strong">gen_list_suc</span>
+<DD>
+<pre>
+|- ∀L n. gen_list L (SUC n) = L::gen_list L n
+</pre>
+
+<DT><span class="strong">compl_fail_event_eq_rel_event</span>
+<DD>
+<pre>
+|- ∀X t p. p_space p DIFF fail_event p X t = rel_event p X t
+</pre>
+
+<DT><span class="strong">comp_rel_event_eq_fail_event</span>
+<DD>
+<pre>
+|- ∀X t p. p_space p DIFF rel_event p X t = fail_event p X t
+</pre>
+
+<DT><span class="strong">rel_series_parallel_RBD_exp_dist_fail_rate_lemma1</span>
+<DD>
+<pre>
+|- ∀p t l c.
+     0 ≤ t ∧ prob_space p ∧ (LENGTH l = LENGTH c) ∧
+     (∀x'. MEM x' (rel_event_list p l t) ⇒ x' ∈ events p) ∧
+     exp_dist_list p l c ⇒
+     (1 − list_prod (one_minus_list (list_prob p (rel_event_list p l t))) =
+      1 − list_prod (one_minus_list (exp_func_list c t)))
+</pre>
+
+<DT><span class="strong">rel_series_parallel_RBD_exp_dist_fail_rate</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (two_dim_rel_event_list p L t)) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (two_dim_rel_event_list p L t)) ∧
+     (LENGTH C = LENGTH L) ∧
+     (∀n. n < LENGTH L ∧ n < LENGTH C ⇒ (LENGTH (EL n L) = LENGTH (EL n C))) ∧
+     two_dim_exp_dist_list p L C ⇒
+     (prob p
+        (rbd_struct p
+           ((series of (λa. parallel (rbd_list a)))
+              (two_dim_rel_event_list p L t))) =
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        C)
+</pre>
+
+<DT><span class="strong">rbd_virtual_cloud_server_alt_form</span>
+<DD>
+<pre>
+|- ∀p t L.
+     prob_space p ⇒
+     (rbd_struct p
+        ((series of (λa. parallel (rbd_list (rel_event_list p a t)))) L) =
+      rbd_struct p
+        ((series of (λa. parallel (rbd_list a)))
+           (two_dim_rel_event_list p L t)))
+</pre>
+
+<DT><span class="strong">rel_virtual_cloud_server</span>
+<DD>
+<pre>
+|- ∀L_VM L_VMM L_HW C_VM C_VMM C_HW p t.
+     ¬NULL L_VM ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'. MEM x' (rel_event_list p (L_VMM::L_HW::L_VM) t) ⇒ x' ∈ events p) ∧
+     mutual_indep p (rel_event_list p (L_VMM::L_HW::L_VM) t) ∧
+     (LENGTH C_VM = LENGTH L_VM) ∧
+     exp_dist_list p (L_VMM::L_HW::L_VM) (C_VMM::C_HW::C_VM) ⇒
+     (prob p
+        (rbd_struct p
+           ((series of (λa. parallel (rbd_list (rel_event_list p a t))))
+              [L_VMM::L_HW::L_VM])) =
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        [C_VMM::C_HW::C_VM])
+</pre>
+
+<DT><span class="strong">seq_rel_prod_tend_0</span>
+<DD>
+<pre>
+|- ∀n p X t.
+     0 ≤ t ∧ possibly p (rel_event p X t) ∧ prob_space p ⇒
+     (λn.
+        list_prod
+          (one_minus_list
+             (list_prob p (rel_event_list p (gen_rv_list X n) t)))) --> 0
+</pre>
+
+<DT><span class="strong">rel_prod_tend_0</span>
+<DD>
+<pre>
+|- ∀n p X t.
+     0 ≤ t ∧ possibly p (rel_event p X t) ∧ prob_space p ⇒
+     (lim
+        (λn.
+           list_prod
+             (one_minus_list
+                (list_prob p (rel_event_list p (gen_rv_list X n) t)))) =
+      0)
+</pre>
+
+<DT><span class="strong">bound_mult_ratr</span>
+<DD>
+<pre>
+|- ∀a b c. 0 < c ⇒ (a * (b / c) = a * b / c)
+</pre>
+
+<DT><span class="strong">bound_log_inequal</span>
+<DD>
+<pre>
+|- ∀a b c e n.
+     0 ≤ e ∧ e < 1 ∧ a < b ∧ 0 < n ∧ 0 < b ∧
+     (a = e * b * (1 − (1 − c) pow n)) ∧ 0 < c ∧ c < 1 ⇒
+     &n > log_base 10 (1 − a / b) / log_base 10 (1 − c)
+</pre>
+
+<DT><span class="strong">nlen_gen_list_eq_n1</span>
+<DD>
+<pre>
+|- ∀L n. LENGTH (gen_list L n) = n
+</pre>
+
+<DT><span class="strong">nlen_gen_list_eq_n</span>
+<DD>
+<pre>
+|- ∀L n t p. LENGTH (rel_event_list p (gen_rv_list L n) t) = n
+</pre>
+
+<DT><span class="strong">compl_rel_pow_n</span>
+<DD>
+<pre>
+|- ∀X p t n.
+     prob_space p ∧ rel_event p X t ∈ events p ⇒
+     (list_prod
+        (one_minus_list
+           (list_prob p (rel_event_list p (gen_rv_list X n) t))) =
+      (1 − Reliability p X t) pow n)
+</pre>
+
+<DT><span class="strong">virt_config_bounds</span>
+<DD>
+<pre>
+|- ∀X_VM X_VMM X_HW p n t.
+     prob_space p ∧ 0 ≤ t ∧ ¬NULL (rel_event_list p (gen_rv_list X_VM n) t) ∧
+     rel_event p X_VMM t ∈ events p ∧ rel_event p X_VM t ∈ events p ∧
+     rel_event p X_HW t ∈ events p ∧
+     (∀x'. MEM x' (rel_event_list p (gen_rv_list X_VM n) t) ⇒ x' ∈ events p) ∧
+     rel_virt_cloud_server p [[X_VMM]; [X_HW]; gen_rv_list X_VM n] t <
+     Reliability p X_VMM t ∧ Reliability p X_HW t < 1 ∧
+     0 < Reliability p X_VMM t ∧
+     (0 < Reliability p X_VM t ∧ Reliability p X_VM t < 1) ∧
+     mutual_indep p (rel_event_list p (X_VMM::X_HW::gen_rv_list X_VM n) t) ⇒
+     &n >
+     log_base 10
+       (1 −
+        rel_virt_cloud_server p [[X_VMM]; [X_HW]; gen_rv_list X_VM n] t /
+        Reliability p X_VMM t) / log_base 10 (1 − Reliability p X_VM t)
+</pre>
+
+<DT><span class="strong">mem_flat_map_not_null2</span>
+<DD>
+<pre>
+|- ∀f L.
+     (∀y. ¬NULL (f y)) ∧ (∀z. MEM z L ⇒ ¬NULL z) ⇒
+     ∀z. MEM z (MAP f L) ⇒ ¬NULL z
+</pre>
+
+<DT><span class="strong">mem_flat_map_not_null3</span>
+<DD>
+<pre>
+|- ∀p t L.
+     (∀z. MEM z L ⇒ ¬NULL z) ⇒
+     ∀z. MEM z (MAP (λa. rel_event_list p a t) L) ⇒ ¬NULL z
+</pre>
+
+<DT><span class="strong">mem_flat_map_not_null1</span>
+<DD>
+<pre>
+|- ∀p t L.
+     (∀z. MEM z (FLAT L) ⇒ ¬NULL z) ⇒
+     ∀z. MEM z (FLAT (MAP (λa. two_dim_rel_event_list p a t) L)) ⇒ ¬NULL z
+</pre>
+
+<DT><span class="strong">mem_flat_map_not_null</span>
+<DD>
+<pre>
+|- ∀p t L.
+     (∀z. MEM z (FLAT (FLAT L)) ⇒ ¬NULL z) ⇒
+     ∀z.
+       MEM z (FLAT (FLAT (MAP (λa. three_dim_rel_event_list p a t) L))) ⇒
+       ¬NULL z
+</pre>
+
+<DT><span class="strong">parallel_series_parallel_rbd_alt_form</span>
+<DD>
+<pre>
+|- ∀p t L.
+     prob_space p ⇒
+     (rbd_struct p
+        ((parallel of series of (λa. parallel (rbd_list a)))
+           (three_dim_rel_event_list p L t)) =
+      rbd_struct p
+        ((parallel of series of
+          (λa. parallel (rbd_list (rel_event_list p a t)))) L))
+</pre>
+
+<DT><span class="strong">nested_series_parallel_rbd_alt_form</span>
+<DD>
+<pre>
+|- ∀p t L.
+     prob_space p ⇒
+     (rbd_struct p
+        ((series of parallel of series of (λa. parallel (rbd_list a)))
+           (four_dim_rel_event_list p L t)) =
+      rbd_struct p
+        ((series of parallel of series of
+          (λa. parallel (rbd_list (rel_event_list p a t)))) L))
+</pre>
+
+<DT><span class="strong">mem_flat_fun_eq_mem_flat_null_list1</span>
+<DD>
+<pre>
+|- ∀p t L. ¬NULL L ⇒ ¬NULL (rel_event_list p L t)
+</pre>
+
+<DT><span class="strong">mem_flat_fun_eq_mem_flat_null_list2</span>
+<DD>
+<pre>
+|- ∀p t L.
+     (∀z. MEM z (FLAT L) ⇒ ¬NULL z) ⇒
+     ∀z.
+       MEM z
+         (FLAT
+            (MAP
+               (λa.
+                  MAP
+                    (λa.
+                       MAP (λa. PREIMAGE a {y | Normal t < y} ∩ p_space p) a)
+                    a) L)) ⇒
+       ¬NULL z
+</pre>
+
+<DT><span class="strong">mem_flat_fun_eq_mem_flat_null_list3</span>
+<DD>
+<pre>
+|- ∀p t L.
+     (∀z. MEM z L ⇒ ¬NULL z) ⇒
+     ∀z. MEM z (two_dim_rel_event_list p L t) ⇒ ¬NULL z
+</pre>
+
+<DT><span class="strong">mem_flat_fun_eq_mem_flat_null_list</span>
+<DD>
+<pre>
+|- ∀p t L.
+     (∀z. MEM z (FLAT (FLAT L)) ⇒ ¬NULL z) ⇒
+     ∀z. MEM z (FLAT (FLAT (four_dim_rel_event_list p L t))) ⇒ ¬NULL z
+</pre>
+
+<DT><span class="strong">parallel_series_parallel_prod_rel_exp_dist</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     0 ≤ t ∧ prob_space p ∧ (LENGTH C = LENGTH L) ∧
+     mutual_indep p (FLAT (FLAT (three_dim_rel_event_list p L t))) ∧
+     (∀x'.
+        MEM x' (FLAT (FLAT (three_dim_rel_event_list p L t))) ⇒
+        x' ∈ events p) ∧ (∀z. MEM z (FLAT L) ⇒ ¬NULL z) ∧
+     three_dim_exp_dist_list p L C ∧
+     (∀n' n.
+        n' < LENGTH L ∧ n' < LENGTH C ∧ n < LENGTH (EL n' L) ∧
+        n < LENGTH (EL n' C) ⇒
+        (LENGTH (EL n (EL n' L)) = LENGTH (EL n (EL n' C)))) ∧
+     (∀n. n < LENGTH L ∧ n < LENGTH C ⇒ (LENGTH (EL n L) = LENGTH (EL n C))) ⇒
+     (1 −
+      list_prod
+        (one_minus_list
+           (MAP
+              ((λa. list_prod a) of
+               (λa. 1 − list_prod (one_minus_list (list_prob p a))))
+              (three_dim_rel_event_list p L t))) =
+      1 −
+      list_prod
+        (one_minus_list
+           (MAP
+              ((λa. list_prod a) of
+               (λa. 1 − list_prod (one_minus_list (exp_func_list a t)))) C)))
+</pre>
+
+<DT><span class="strong">nested_series_parallel_exp_dist</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     0 ≤ t ∧ prob_space p ∧ (∀z. MEM z (FLAT (FLAT L)) ⇒ ¬NULL z) ∧
+     (∀x'.
+        MEM x' (FLAT (FLAT (FLAT (four_dim_rel_event_list p L t)))) ⇒
+        x' ∈ events p) ∧ (LENGTH C = LENGTH L) ∧
+     (∀n. n < LENGTH L ∧ n < LENGTH C ⇒ (LENGTH (EL n L) = LENGTH (EL n C))) ∧
+     (∀n' n.
+        n' < LENGTH L ∧ n' < LENGTH C ∧ n < LENGTH (EL n' L) ∧
+        n < LENGTH (EL n' C) ⇒
+        (LENGTH (EL n (EL n' L)) = LENGTH (EL n (EL n' C)))) ∧
+     (∀n'' n' n.
+        n'' < LENGTH L ∧ n'' < LENGTH C ∧ n' < LENGTH (EL n'' L) ∧
+        n' < LENGTH (EL n'' C) ∧ n < LENGTH (EL n' (EL n'' L)) ∧
+        n < LENGTH (EL n' (EL n'' C)) ⇒
+        (LENGTH (EL n (EL n' (EL n'' L))) =
+         LENGTH (EL n (EL n' (EL n'' C))))) ∧ four_dim_exp_dist_list p L C ∧
+     mutual_indep p (FLAT (FLAT (FLAT (four_dim_rel_event_list p L t)))) ⇒
+     (prob p
+        (rbd_struct p
+           ((series of parallel of series of
+             (λa. parallel (rbd_list (rel_event_list p a t)))) L)) =
+      (list_prod of (λa. 1 − list_prod (one_minus_list a)) of
+       (λa. list_prod a) of
+       (λa. 1 − list_prod (one_minus_list (exp_func_list a t)))) C)
+</pre>
+
+<DT><span class="strong">cloud_server_rv_list_not_null1</span>
+<DD>
+<pre>
+|- ∀p t a b c n m.
+     (∀z.
+        MEM z (FLAT (gen_list [c] m)) ∨
+        MEM z (FLAT (FLAT (cloud_server_rv_list [c] m n))) ⇒
+        ¬NULL z) ⇒
+     ∀z.
+       MEM z (FLAT (three_dim_rel_event_list p (gen_list [a::b::c] m) t)) ⇒
+       ¬NULL z
+</pre>
+
+<DT><span class="strong">cloud_server_rv_list_not_null2</span>
+<DD>
+<pre>
+|- ∀a b c n m.
+     (∀z.
+        MEM z (FLAT (gen_list [c] m)) ∨
+        MEM z (FLAT (FLAT (cloud_server_rv_list [c] m n))) ⇒
+        ¬NULL z) ⇒
+     ∀z. MEM z (FLAT (gen_list [a::b::c] m)) ⇒ ¬NULL z
+</pre>
+
+<DT><span class="strong">cloud_server_rv_list_not_null3</span>
+<DD>
+<pre>
+|- ∀a b c n m.
+     (∀z. MEM z (FLAT (FLAT (cloud_server_rv_list [c] m n))) ⇒ ¬NULL z) ⇒
+     ∀z. MEM z (FLAT (FLAT (cloud_server_rv_list [a::b::c] m n))) ⇒ ¬NULL z
+</pre>
+
+<DT><span class="strong">cloud_server_rv_list_not_null</span>
+<DD>
+<pre>
+|- ∀p t a b c n m.
+     (∀z. MEM z (FLAT (FLAT (cloud_server_rv_list [c] m n))) ⇒ ¬NULL z) ⇒
+     ∀z.
+       MEM z
+         (FLAT
+            (FLAT
+               (four_dim_rel_event_list p (cloud_server_rv_list [a::b::c] m n)
+                  t))) ⇒
+       ¬NULL z
+</pre>
+
+<DT><span class="strong">in_events_cloud_server_rv_list1</span>
+<DD>
+<pre>
+|- ∀p t a b c n m.
+     rel_event p a t ∈ events p ∧ rel_event p b t ∈ events p ∧
+     (∀x'.
+        MEM x' (FLAT (FLAT (three_dim_rel_event_list p (gen_list [c] m) t))) ∨
+        MEM x'
+          (FLAT
+             (FLAT
+                (FLAT
+                   (MAP (λa. three_dim_rel_event_list p a t)
+                      (cloud_server_rv_list [c] m n))))) ⇒
+        x' ∈ events p) ⇒
+     ∀x'.
+       MEM x'
+         (FLAT (FLAT (three_dim_rel_event_list p (gen_list [a::b::c] m) t))) ⇒
+       x' ∈ events p
+</pre>
+
+<DT><span class="strong">in_events_cloud_server_rv_list</span>
+<DD>
+<pre>
+|- ∀p t a b c n m.
+     rel_event p a t ∈ events p ∧ rel_event p b t ∈ events p ∧
+     (∀x'.
+        MEM x'
+          (FLAT
+             (FLAT
+                (FLAT
+                   (four_dim_rel_event_list p (cloud_server_rv_list [c] m n)
+                      t)))) ⇒
+        x' ∈ events p) ⇒
+     ∀x'.
+       MEM x'
+         (FLAT
+            (FLAT
+               (FLAT
+                  (four_dim_rel_event_list p
+                     (cloud_server_rv_list [a::b::c] m n) t)))) ⇒
+       x' ∈ events p
+</pre>
+
+<DT><span class="strong">rel_prod_series_rbd_exp_dist</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     0 ≤ t ∧ prob_space p ∧ exp_dist_list p L C ∧ (LENGTH C = LENGTH L) ∧
+     (∀x. MEM x (rel_event_list p L t) ⇒ x ∈ events p) ⇒
+     (list_prod (list_prob p (rel_event_list p L t)) =
+      list_prod (exp_func_list C t))
+</pre>
+
+<DT><span class="strong">len_cloud_server_fail_rate_eq_rv_list</span>
+<DD>
+<pre>
+|- ∀a b c d e f n m.
+     LENGTH (cloud_server_fail_rate_list [a::b::c] m n) =
+     LENGTH (cloud_server_rv_list [d::e::f] m n)
+</pre>
+
+<DT><span class="strong">len_cloud_server_fail_rate_eq_rv_list1</span>
+<DD>
+<pre>
+|- ∀a b c d e f m.
+     (LENGTH [a::b::c] = LENGTH [d::e::f]) ⇒
+     (LENGTH (gen_list [a::b::c] m) = LENGTH (gen_list [d::e::f] m))
+</pre>
+
+<DT><span class="strong">len_cloud_server_fail_rate_eq_rv_list2</span>
+<DD>
+<pre>
+|- ∀a b c d e f n m n'.
+     (LENGTH [a::b::c] = LENGTH [d::e::f]) ∧
+     n' < LENGTH (cloud_server_rv_list [a::b::c] m n) ∧
+     n' < LENGTH (cloud_server_fail_rate_list [d::e::f] m n) ∧ ¬NULL c ∧
+     ¬NULL f ⇒
+     (LENGTH (EL n' (cloud_server_rv_list [a::b::c] m n)) =
+      LENGTH (EL n' (cloud_server_fail_rate_list [d::e::f] m n)))
+</pre>
+
+<DT><span class="strong">len_cloud_server_fail_rate_eq_rv_list3</span>
+<DD>
+<pre>
+|- ∀a b c d e f m n.
+     (LENGTH c = LENGTH f) ∧ ¬NULL f ∧ ¬NULL c ∧
+     n < LENGTH (gen_list [a::b::c] m) ∧ n < LENGTH (gen_list [d::e::f] m) ⇒
+     (LENGTH (EL n (gen_list [a::b::c] m)) =
+      LENGTH (EL n (gen_list [d::e::f] m)))
+</pre>
+
+<DT><span class="strong">len_cloud_server_fail_rate_eq_rv_list4</span>
+<DD>
+<pre>
+|- ∀a b c d e f l m n n'.
+     (LENGTH c = LENGTH f) ∧
+     n' < LENGTH (cloud_server_rv_list [a::b::c] m l) ∧
+     n' < LENGTH (cloud_server_fail_rate_list [d::e::f] m l) ∧
+     n < LENGTH (EL n' (cloud_server_rv_list [a::b::c] m l)) ∧
+     n < LENGTH (EL n' (cloud_server_fail_rate_list [d::e::f] m l)) ∧
+     ¬NULL f ∧ ¬NULL c ∧ ¬NULL (cloud_server_fail_rate_list [f] m l) ∧
+     ¬NULL (cloud_server_rv_list [c] m l) ⇒
+     (LENGTH (EL n (EL n' (cloud_server_rv_list [a::b::c] m l))) =
+      LENGTH (EL n (EL n' (cloud_server_fail_rate_list [d::e::f] m l))))
+</pre>
+
+<DT><span class="strong">len_cloud_server_fail_rate_eq_rv_list5</span>
+<DD>
+<pre>
+|- ∀a b c d e f n.
+     (LENGTH c = LENGTH f) ∧ ¬NULL f ∧ ¬NULL c ∧ n < LENGTH [a::b::c] ∧
+     n < LENGTH [d::e::f] ⇒
+     (LENGTH (EL n [a::b::c]) = LENGTH (EL n [d::e::f]))
+</pre>
+
+<DT><span class="strong">len_cloud_server_fail_rate_eq_rv_list6</span>
+<DD>
+<pre>
+|- ∀a b c d e f m n n'.
+     (LENGTH c = LENGTH f) ∧ ¬NULL f ∧ ¬NULL c ∧
+     n' < LENGTH (gen_list [a::b::c] m) ∧ n' < LENGTH (gen_list [d::e::f] m) ∧
+     n < LENGTH (EL n' (gen_list [a::b::c] m)) ∧
+     n < LENGTH (EL n' (gen_list [d::e::f] m)) ⇒
+     (LENGTH (EL n (EL n' (gen_list [a::b::c] m))) =
+      LENGTH (EL n (EL n' (gen_list [d::e::f] m))))
+</pre>
+
+<DT><span class="strong">len_cloud_server_fail_rate_eq_rv_list7</span>
+<DD>
+<pre>
+|- ∀a b c d e f l m n n' n''.
+     ¬NULL f ∧ ¬NULL c ∧ (LENGTH c = LENGTH f) ∧
+     n'' < LENGTH (cloud_server_rv_list [a::b::c] m l) ∧
+     n'' < LENGTH (cloud_server_fail_rate_list [d::e::f] m l) ∧
+     n' < LENGTH (EL n'' (cloud_server_rv_list [a::b::c] m l)) ∧
+     n' < LENGTH (EL n'' (cloud_server_fail_rate_list [d::e::f] m l)) ∧
+     n < LENGTH (EL n' (EL n'' (cloud_server_rv_list [a::b::c] m l))) ∧
+     n < LENGTH (EL n' (EL n'' (cloud_server_fail_rate_list [d::e::f] m l))) ⇒
+     (LENGTH (EL n (EL n' (EL n'' (cloud_server_rv_list [a::b::c] m l)))) =
+      LENGTH
+        (EL n (EL n' (EL n'' (cloud_server_fail_rate_list [d::e::f] m l)))))
+</pre>
+
+<DT><span class="strong">VDC_case_study_thm</span>
+<DD>
+<pre>
+|- ∀X_VM X_VMM X_HW X_C C_VM C_VMM C_HW C m n p t.
+     0 ≤ t ∧ prob_space p ∧ ¬NULL (cloud_server_rv_list [X_VM] m n) ∧
+     ¬NULL (cloud_server_fail_rate_list [C_VM] m n) ∧
+     (∀z. MEM z (FLAT (FLAT (cloud_server_rv_list [X_VM] m n))) ⇒ ¬NULL z) ∧
+     (LENGTH C = LENGTH X_C) ∧ ¬NULL C_VM ∧ ¬NULL X_VM ∧
+     (LENGTH X_VM = LENGTH C_VM) ∧ exp_dist_list p X_C C ∧
+     ¬NULL (rel_event_list p X_C t) ∧
+     (∀x'.
+        MEM x'
+          (FLAT
+             (FLAT
+                (FLAT
+                   (four_dim_rel_event_list p
+                      (cloud_server_rv_list [X_VM] m n) t)))) ⇒
+        x' ∈ events p) ∧ rel_event p X_VMM t ∈ events p ∧
+     rel_event p X_HW t ∈ events p ∧
+     (∀z'. MEM z' (rel_event_list p X_C t) ⇒ z' ∈ events p) ∧
+     (LENGTH X_VM = LENGTH C_VM) ∧
+     four_dim_exp_dist_list p (cloud_server_rv_list [X_VMM::X_HW::X_VM] m n)
+       (cloud_server_fail_rate_list [C_VMM::C_HW::C_VM] m n) ∧
+     mutual_indep p
+       (rel_event_list p X_C t ++
+        FLAT
+          (FLAT
+             (FLAT
+                (four_dim_rel_event_list p
+                   (cloud_server_rv_list [X_VMM::X_HW::X_VM] m n) t)))) ⇒
+     (prob p
+        (rbd_struct p (series (rbd_list (rel_event_list p X_C t))) ∩
+         rbd_struct p
+           ((series of parallel of series of
+             (λa. parallel (rbd_list (rel_event_list p a t))))
+              (cloud_server_rv_list [X_VMM::X_HW::X_VM] m n))) =
+      list_prod (exp_func_list C t) *
+      (list_prod of (λa. 1 − list_prod (one_minus_list a)) of
+       (λa. list_prod a) of
+       (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        (cloud_server_fail_rate_list [C_VMM::C_HW::C_VM] m n))
+</pre>
+
+<DT><span class="strong">parallel_series_exp_fail_rate</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (two_dim_rel_event_list p L t)) ⇒ x' ∈ events p) ∧
+     (LENGTH C = LENGTH L) ∧
+     (∀n. n < LENGTH L ∧ n < LENGTH C ⇒ (LENGTH (EL n L) = LENGTH (EL n C))) ∧
+     two_dim_exp_dist_list p L C ⇒
+     (1 −
+      (list_prod o one_minus_list of (λa. list_prod (list_prob p a)))
+        (two_dim_rel_event_list p L t) =
+      1 −
+      (list_prod o one_minus_list of (λa. list_prod (exp_func_list a t))) C)
+</pre>
+
+<DT><span class="strong">rel_parallel_series_exp_fail_rate</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (two_dim_rel_event_list p L t)) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (two_dim_rel_event_list p L t)) ∧
+     (LENGTH C = LENGTH L) ∧
+     (∀n. n < LENGTH L ∧ n < LENGTH C ⇒ (LENGTH (EL n L) = LENGTH (EL n C))) ∧
+     two_dim_exp_dist_list p L C ⇒
+     (prob p
+        (rbd_struct p
+           ((parallel of (λa. series (rbd_list a)))
+              (two_dim_rel_event_list p L t))) =
+      1 −
+      (list_prod o one_minus_list of (λa. list_prod (exp_func_list a t))) C)
+</pre>
+
+</DL>
+
+
+
+<hr>
+</body>
+</html>

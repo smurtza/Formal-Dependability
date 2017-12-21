@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head><title>Theory: WSN</title><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<style type="text/css">
+<!--
+  body {background: #faf0e6; color: #191970; }
+  span.freevar  { color: blue}
+  span.boundvar { color: green}
+  span.typevar  { color: purple}
+  span.type     { color: teal}
+  span.strong   { color: black; font-weight: bold}
+  span.vstrong  { color: black; 
+                  font-weight: bold;
+                  font-size: larger}
+  h1 {color: black}
+  th {color: crimson}
+-->
+</style>
+</head>
+<body>
+<h1>Theory "WSN"</h1>
+<span class="vstrong">Parents</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href = "smart_gridTheory.html"><span class="strong">smart_grid</span></a>
+
+<h1>Signature</h1>
+<center>
+<table BORDER=4 CELLPADDING=10 CELLSPACING=1>
+
+    <tr>
+    <th>
+    Constant
+    <th>
+    Type<tr><td>
+            <span class="strong">RMST_fail_rate_list</span>
+            <td>
+            :α -> α -> num -> α list list
+    <tr><td> <span class="strong">UNIONL</span> <td> :α event list -> α event
+
+</table>
+</center>
+
+<h1>Definitions</h1>
+<DL>
+<DT><span class="strong">UNIONL_def</span>
+<DD>
+<pre>
+|- (UNIONL [] = ∅) ∧ ∀s ss. UNIONL (s::ss) = s ∪ UNIONL ss
+</pre>
+
+<DT><span class="strong">RMST_fail_rate_list_def</span>
+<DD>
+<pre>
+|- (∀a b. RMST_fail_rate_list a b 0 = []) ∧
+   ∀a b n. RMST_fail_rate_list a b (SUC n) = [a; b]::RMST_fail_rate_list a b n
+</pre>
+
+</DL>
+
+
+<hr>
+
+<hr>
+<h1>Theorems</h1>
+<DL>
+<DT><span class="strong">IN_UNIONL</span>
+<DD>
+<pre>
+|- ∀l v. v ∈ UNIONL l ⇔ ∃s. MEM s l ∧ v ∈ s
+</pre>
+
+<DT><span class="strong">E2W_WSN</span>
+<DD>
+<pre>
+|- ∀p t X_fil X_aggr X_rout C_fil C_aggr C_rout.
+     0 ≤ t ∧ prob_space p ∧
+     exp_dist_list p [X_fil; X_aggr; X_rout] [C_fil; C_aggr; C_rout] ∧
+     mutual_indep p (rel_event_list p [X_fil; X_aggr; X_rout] t) ∧
+     (∀x. MEM x (rel_event_list p [X_fil; X_aggr; X_rout] t) ⇒ x ∈ events p) ⇒
+     (prob p
+        (rbd_struct p
+           (series (rbd_list (rel_event_list p [X_fil; X_aggr; X_rout] t)))) =
+      exp (-list_sum [C_fil; C_aggr; C_rout] * t))
+</pre>
+
+<DT><span class="strong">one_minus_exp_equi</span>
+<DD>
+<pre>
+|- ∀t c. one_minus_list (exp_func_list c t) = one_minus_exp t c
+</pre>
+
+<DT><span class="strong">ESRT_WSN</span>
+<DD>
+<pre>
+|- ∀p t X_routing_list C_routing_list.
+     0 ≤ t ∧ prob_space p ∧ ¬NULL (rel_event_list p X_routing_list t) ∧
+     exp_dist_list p X_routing_list C_routing_list ∧
+     (LENGTH X_routing_list = LENGTH C_routing_list) ∧
+     mutual_indep p (rel_event_list p X_routing_list t) ∧
+     (∀x. MEM x (rel_event_list p X_routing_list t) ⇒ x ∈ events p) ⇒
+     (prob p
+        (rbd_struct p
+           (parallel (rbd_list (rel_event_list p X_routing_list t)))) =
+      1 − list_prod (one_minus_exp t C_routing_list))
+</pre>
+
+<DT><span class="strong">parallel_series_struct_rbd_v2</span>
+<DD>
+<pre>
+|- ∀p L.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT L) ⇒ x' ∈ events p) ∧ mutual_indep p (FLAT L) ⇒
+     (prob p (rbd_struct p ((parallel of (λa. series (rbd_list a))) L)) =
+      1 − (list_prod o one_minus_list of (λa. list_prod (list_prob p a))) L)
+</pre>
+
+<DT><span class="strong">parallel_series_exp_fail_rate</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (two_dim_rel_event_list p L t)) ⇒ x' ∈ events p) ∧
+     (LENGTH C = LENGTH L) ∧
+     (∀n. n < LENGTH L ∧ n < LENGTH C ⇒ (LENGTH (EL n L) = LENGTH (EL n C))) ∧
+     two_dim_exp_dist_list p L C ⇒
+     (1 −
+      (list_prod o one_minus_list of (λa. list_prod (list_prob p a)))
+        (two_dim_rel_event_list p L t) =
+      1 −
+      (list_prod o one_minus_list of (λa. list_prod (exp_func_list a t))) C)
+</pre>
+
+<DT><span class="strong">rel_parallel_series_exp_fail_rate</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (two_dim_rel_event_list p L t)) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (two_dim_rel_event_list p L t)) ∧
+     (LENGTH C = LENGTH L) ∧
+     (∀n. n < LENGTH L ∧ n < LENGTH C ⇒ (LENGTH (EL n L) = LENGTH (EL n C))) ∧
+     two_dim_exp_dist_list p L C ⇒
+     (prob p
+        (rbd_struct p
+           ((parallel of (λa. series (rbd_list a)))
+              (two_dim_rel_event_list p L t))) =
+      1 −
+      (list_prod o one_minus_list of (λa. list_prod (exp_func_list a t))) C)
+</pre>
+
+<DT><span class="strong">RMST_fail_rate_list_def_compute</span>
+<DD>
+<pre>
+|- (∀a b. RMST_fail_rate_list a b 0 = []) ∧
+   (∀a b n.
+      RMST_fail_rate_list a b (NUMERAL (BIT1 n)) =
+      [a; b]::RMST_fail_rate_list a b (NUMERAL (BIT1 n) − 1)) ∧
+   ∀a b n.
+     RMST_fail_rate_list a b (NUMERAL (BIT2 n)) =
+     [a; b]::RMST_fail_rate_list a b (NUMERAL (BIT1 n))
+</pre>
+
+<DT><span class="strong">RMST_WSN</span>
+<DD>
+<pre>
+|- ∀p t X_rout X_MLD C_rout C_MLD n.
+     (∀z. MEM z (RMST_fail_rate_list X_rout X_MLD n) ⇒ ¬NULL z) ∧ 0 ≤ t ∧
+     prob_space p ∧
+     (∀x'.
+        MEM x'
+          (FLAT
+             (two_dim_rel_event_list p (RMST_fail_rate_list X_rout X_MLD n)
+                t)) ⇒
+        x' ∈ events p) ∧
+     mutual_indep p
+       (FLAT
+          (two_dim_rel_event_list p (RMST_fail_rate_list X_rout X_MLD n) t)) ∧
+     (LENGTH (RMST_fail_rate_list C_rout C_MLD n) =
+      LENGTH (RMST_fail_rate_list X_rout X_MLD n)) ∧
+     (∀n'.
+        n' < LENGTH (RMST_fail_rate_list X_rout X_MLD n) ∧
+        n' < LENGTH (RMST_fail_rate_list C_rout C_MLD n) ⇒
+        (LENGTH (EL n' (RMST_fail_rate_list X_rout X_MLD n)) =
+         LENGTH (EL n' (RMST_fail_rate_list C_rout C_MLD n)))) ∧
+     two_dim_exp_dist_list p (RMST_fail_rate_list X_rout X_MLD n)
+       (RMST_fail_rate_list C_rout C_MLD n) ⇒
+     (prob p
+        (rbd_struct p
+           ((parallel of (λa. series (rbd_list a)))
+              (two_dim_rel_event_list p (RMST_fail_rate_list X_rout X_MLD n)
+                 t))) =
+      1 −
+      (list_prod o one_minus_list of (λa. list_prod (exp_func_list a t)))
+        (RMST_fail_rate_list C_rout C_MLD n))
+</pre>
+
+</DL>
+
+
+
+<hr>
+</body>
+</html>

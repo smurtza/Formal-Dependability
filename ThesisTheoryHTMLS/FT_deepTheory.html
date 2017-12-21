@@ -1,0 +1,1310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head><title>Theory: FT_deep</title><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<style type="text/css">
+<!--
+  body {background: #faf0e6; color: #191970; }
+  span.freevar  { color: blue}
+  span.boundvar { color: green}
+  span.typevar  { color: purple}
+  span.type     { color: teal}
+  span.strong   { color: black; font-weight: bold}
+  span.vstrong  { color: black; 
+                  font-weight: bold;
+                  font-size: larger}
+  h1 {color: black}
+  th {color: crimson}
+-->
+</style>
+</head>
+<body>
+<h1>Theory "FT_deep"</h1>
+<span class="vstrong">Parents</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href = "RBDTheory.html"><span class="strong">RBD</span></a>
+
+<h1>Signature</h1>
+<center>
+<table BORDER=4 CELLPADDING=10 CELLSPACING=1>
+
+    <tr> <th> Type <th> Arity<tr><td> <span class="strong">gate</span> <td> 1
+    <tr>
+    <th>
+    Constant
+    <th>
+    Type<tr><td> <span class="strong">AND</span> <td> :α gate list -> α gate
+    <tr><td>
+        <span class="strong">FTree</span>
+        <td>
+        :α event # α event event # (α event -> real) -> α gate -> α event
+    <tr><td>
+        <span class="strong">FTree_tupled</span>
+        <td>
+        :(α event # α event event # (α event -> real)) # α gate -> α event
+    <tr><td>
+        <span class="strong">K_out_N_struct</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> num -> num -> α event
+    <tr><td>
+        <span class="strong">NOR_FT_gate</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α event list -> α event
+    <tr><td> <span class="strong">NOT</span> <td> :α gate -> α gate
+    <tr><td> <span class="strong">OR</span> <td> :α gate list -> α gate
+    <tr><td> <span class="strong">UNIONL</span> <td> :α event list -> α event
+    <tr><td>
+        <span class="strong">XOR_FT_gate</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α gate -> α gate -> α event
+    <tr><td> <span class="strong">atomic</span> <td> :α event -> α gate
+    <tr><td> <span class="strong">binomial</span> <td> :num -> num -> num
+    <tr><td>
+        <span class="strong">binomial_tupled</span>
+        <td>
+        :num # num -> num
+    <tr><td>
+        <span class="strong">comp_FT_gate</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α gate -> α gate -> α event
+    <tr><td>
+        <span class="strong">gate1_size</span>
+        <td>
+        :(α -> num) -> α gate list -> num
+    <tr><td>
+        <span class="strong">gate_CASE</span>
+        <td>
+        :α gate ->
+         (α gate list -> β) ->
+         (α gate list -> β) -> (α gate -> β) -> (α event -> β) -> β
+    <tr><td>
+        <span class="strong">gate_list</span>
+        <td>
+        :α event list -> α gate list
+    <tr><td>
+        <span class="strong">gate_size</span>
+        <td>
+        :(α -> num) -> α gate -> num
+    <tr><td> <span class="strong">has_size</span> <td> :α event -> num event
+    <tr><td>
+        <span class="strong">inhibit_FT_gate</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α gate -> α gate -> α gate -> α event
+    <tr><td>
+        <span class="strong">inter_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α event list -> α event
+    <tr><td>
+        <span class="strong">majority_voting_FT_gate</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> num -> num -> α event
+    <tr><td>
+        <span class="strong">sum_set</span>
+        <td>
+        :α event -> (α -> real) -> real
+    <tr><td>
+        <span class="strong">union_list</span>
+        <td>
+        :α event list -> α event
+
+</table>
+</center>
+
+<h1>Definitions</h1>
+<DL>
+<DT><span class="strong">K_out_N_struct_def</span>
+<DD>
+<pre>
+|- ∀p X k n.
+     K_out_N_struct p X k n =
+     BIGUNION
+       (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+          {x | k ≤ x ∧ x < SUC n})
+</pre>
+
+<DT><span class="strong">sum_set_def</span>
+<DD>
+<pre>
+|- ∀s f. sum_set s f = SIGMA f s
+</pre>
+
+<DT><span class="strong">binomial_curried_def</span>
+<DD>
+<pre>
+|- ∀x x1. binomial x x1 = binomial_tupled (x,x1)
+</pre>
+
+<DT><span class="strong">binomial_tupled_primitive_def</span>
+<DD>
+<pre>
+|- binomial_tupled =
+   WFREC
+     (@R.
+        WF R ∧ (∀k n. R (n,k) (SUC n,SUC k)) ∧
+        ∀k n. R (n,SUC k) (SUC n,SUC k))
+     (λbinomial_tupled a.
+        case a of
+          (n,0) => I 1
+        | (0,SUC k) => I 0
+        | (SUC n',SUC k) =>
+            I (binomial_tupled (n',SUC k) + binomial_tupled (n',k)))
+</pre>
+
+<DT><span class="strong">comp_FT_gate_def</span>
+<DD>
+<pre>
+|- ∀p A B. comp_FT_gate p A B = FTree p (OR [AND [A; B]; NOT (OR [A; B])])
+</pre>
+
+<DT><span class="strong">inhibit_FT_gate_def</span>
+<DD>
+<pre>
+|- ∀p A B C. inhibit_FT_gate p A B C = FTree p (AND [OR [A; B]; NOT C])
+</pre>
+
+<DT><span class="strong">XOR_FT_gate_def</span>
+<DD>
+<pre>
+|- ∀p A B. XOR_FT_gate p A B = FTree p (OR [AND [NOT A; B]; AND [A; NOT B]])
+</pre>
+
+<DT><span class="strong">NOR_FT_gate_def</span>
+<DD>
+<pre>
+|- ∀p L. NOR_FT_gate p L = p_space p DIFF FTree p (OR (gate_list L))
+</pre>
+
+<DT><span class="strong">gate_list_def</span>
+<DD>
+<pre>
+|- (gate_list [] = []) ∧ ∀h t. gate_list (h::t) = atomic h::gate_list t
+</pre>
+
+<DT><span class="strong">FTree_curried_def</span>
+<DD>
+<pre>
+|- ∀x x1. FTree x x1 = FTree_tupled (x,x1)
+</pre>
+
+<DT><span class="strong">FTree_tupled_primitive_def</span>
+<DD>
+<pre>
+|- FTree_tupled =
+   WFREC
+     (@R.
+        WF R ∧ (∀a p. R (p,a) (p,NOT a)) ∧
+        (∀x xs p. R (p,AND xs) (p,AND (x::xs))) ∧
+        (∀xs x p. R (p,x) (p,AND (x::xs))) ∧
+        (∀xs x p. R (p,x) (p,OR (x::xs))) ∧
+        ∀x xs p. R (p,OR xs) (p,OR (x::xs)))
+     (λFTree_tupled a'.
+        case a' of
+          (p,AND []) => I (p_space p)
+        | (p,AND (x::xs)) => I (FTree_tupled (p,x) ∩ FTree_tupled (p,AND xs))
+        | (p,OR []) => I ∅
+        | (p,OR (x'::xs')) =>
+            I (FTree_tupled (p,x') ∪ FTree_tupled (p,OR xs'))
+        | (p,NOT a'') => I (p_space p DIFF FTree_tupled (p,a''))
+        | (p,atomic a) => I a)
+</pre>
+
+<DT><span class="strong">gate_size_def</span>
+<DD>
+<pre>
+|- (∀f a. gate_size f (AND a) = 1 + gate1_size f a) ∧
+   (∀f a. gate_size f (OR a) = 1 + gate1_size f a) ∧
+   (∀f a. gate_size f (NOT a) = 1 + gate_size f a) ∧
+   (∀f a. gate_size f (atomic a) = 1) ∧ (∀f. gate1_size f [] = 0) ∧
+   ∀f a0 a1. gate1_size f (a0::a1) = 1 + (gate_size f a0 + gate1_size f a1)
+</pre>
+
+<DT><span class="strong">gate_case_def</span>
+<DD>
+<pre>
+|- (∀a f f1 f2 f3. gate_CASE (AND a) f f1 f2 f3 = f a) ∧
+   (∀a f f1 f2 f3. gate_CASE (OR a) f f1 f2 f3 = f1 a) ∧
+   (∀a f f1 f2 f3. gate_CASE (NOT a) f f1 f2 f3 = f2 a) ∧
+   ∀a f f1 f2 f3. gate_CASE (atomic a) f f1 f2 f3 = f3 a
+</pre>
+
+<DT><span class="strong">gate_TY_DEF</span>
+<DD>
+<pre>
+|- ∃rep.
+     TYPE_DEFINITION
+       (λa0'.
+          ∀'gate' '@temp @ind_typeFT_deep0list' .
+            (∀a0'.
+               (∃a.
+                  (a0' =
+                   (λa.
+                      ind_type$CONSTR 0 ARB
+                        (ind_type$FCONS a (λn. ind_type$BOTTOM))) a) ∧
+                  '@temp @ind_typeFT_deep0list' a) ∨
+               (∃a.
+                  (a0' =
+                   (λa.
+                      ind_type$CONSTR (SUC 0) ARB
+                        (ind_type$FCONS a (λn. ind_type$BOTTOM))) a) ∧
+                  '@temp @ind_typeFT_deep0list' a) ∨
+               (∃a.
+                  (a0' =
+                   (λa.
+                      ind_type$CONSTR (SUC (SUC 0)) ARB
+                        (ind_type$FCONS a (λn. ind_type$BOTTOM))) a) ∧
+                  'gate' a) ∨
+               (∃a.
+                  a0' =
+                  (λa.
+                     ind_type$CONSTR (SUC (SUC (SUC 0))) a
+                       (λn. ind_type$BOTTOM)) a) ⇒
+               'gate' a0') ∧
+            (∀a1'.
+               (a1' =
+                ind_type$CONSTR (SUC (SUC (SUC (SUC 0)))) ARB
+                  (λn. ind_type$BOTTOM)) ∨
+               (∃a0 a1.
+                  (a1' =
+                   (λa0 a1.
+                      ind_type$CONSTR (SUC (SUC (SUC (SUC (SUC 0))))) ARB
+                        (ind_type$FCONS a0
+                           (ind_type$FCONS a1 (λn. ind_type$BOTTOM)))) a0
+                     a1) ∧ 'gate' a0 ∧ '@temp @ind_typeFT_deep0list' a1) ⇒
+               '@temp @ind_typeFT_deep0list' a1') ⇒
+            'gate' a0') rep
+</pre>
+
+<DT><span class="strong">UNIONL_def</span>
+<DD>
+<pre>
+|- (UNIONL [] = ∅) ∧ ∀s ss. UNIONL (s::ss) = s ∪ UNIONL ss
+</pre>
+
+<DT><span class="strong">majority_voting_FT_gate_def</span>
+<DD>
+<pre>
+|- ∀p X k n.
+     majority_voting_FT_gate p X k n =
+     BIGUNION
+       (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+          {x | k ≤ x ∧ x < SUC n})
+</pre>
+
+<DT><span class="strong">has_size_def</span>
+<DD>
+<pre>
+|- ∀s n. has_size s n ⇔ FINITE s ∧ (CARD s = n)
+</pre>
+
+<DT><span class="strong">inter_list_def</span>
+<DD>
+<pre>
+|- (∀p. inter_list p [] = p_space p) ∧
+   ∀p h t. inter_list p (h::t) = h ∩ inter_list p t
+</pre>
+
+<DT><span class="strong">union_list_def</span>
+<DD>
+<pre>
+|- (union_list [] = ∅) ∧ ∀h t. union_list (h::t) = h ∪ union_list t
+</pre>
+
+</DL>
+
+
+<hr>
+
+<hr>
+<h1>Theorems</h1>
+<DL>
+<DT><span class="strong">BINOMIAL_DEF4</span>
+<DD>
+<pre>
+|- ∀n k. binomial (SUC n) (SUC k) = binomial n (SUC k) + binomial n k
+</pre>
+
+<DT><span class="strong">BINOMIAL_DEF5</span>
+<DD>
+<pre>
+|- ∀n k. k ≤ n ⇒ binomial n k ≠ 0
+</pre>
+
+<DT><span class="strong">BINOMIAL_FACT</span>
+<DD>
+<pre>
+|- ∀a b. binomial (a + b) b * (FACT a * FACT b) = FACT (a + b)
+</pre>
+
+<DT><span class="strong">BINOMIAL_DEF7</span>
+<DD>
+<pre>
+|- ∀n k. 0 ≤ binomial n k
+</pre>
+
+<DT><span class="strong">BINOMIAL_DEF3</span>
+<DD>
+<pre>
+|- ∀n. binomial n n = 1
+</pre>
+
+<DT><span class="strong">BINOMIAL_DEF2</span>
+<DD>
+<pre>
+|- ∀n k. n < k ⇒ (binomial n k = 0)
+</pre>
+
+<DT><span class="strong">BINOMIAL_DEF1</span>
+<DD>
+<pre>
+|- ∀n. binomial n 0 = 1
+</pre>
+
+<DT><span class="strong">SUM_POS_LT</span>
+<DD>
+<pre>
+|- ∀f. (∀n. 0 < f n) ⇒ ∀m n. 0 < sum (m,SUC n) f
+</pre>
+
+<DT><span class="strong">SUM_SWITCH_SUM</span>
+<DD>
+<pre>
+|- ∀f n1 n2 m1 m2.
+     sum (n1,m1) (λi. sum (n2,m2) (λj. f i j)) =
+     sum (n2,m2) (λj. sum (n1,m1) (λi. f i j))
+</pre>
+
+<DT><span class="strong">SUM_C_EQ</span>
+<DD>
+<pre>
+|- ∀n m c. sum (n,SUC m) (λi. c) = &(m + 1) * c
+</pre>
+
+<DT><span class="strong">SUM_SHIFT_P</span>
+<DD>
+<pre>
+|- ∀n p f. sum (p,n) (λi. f (i + 1)) = sum (p + 1,n) f
+</pre>
+
+<DT><span class="strong">SUM_SHIFT</span>
+<DD>
+<pre>
+|- ∀n f. sum (0,n) f = sum (1,n) (λi. f (i − 1))
+</pre>
+
+<DT><span class="strong">SUM_1_SUM_2</span>
+<DD>
+<pre>
+|- ∀n f. sum (1,SUC n) f = f 1 + sum (2,n) f
+</pre>
+
+<DT><span class="strong">SUM_0_SUM_2</span>
+<DD>
+<pre>
+|- ∀n f. sum (0,SUC (SUC n)) f = f 0 + f 1 + sum (2,n) f
+</pre>
+
+<DT><span class="strong">SUM_0_SUM_1</span>
+<DD>
+<pre>
+|- ∀n f. sum (0,SUC n) f = f 0 + sum (1,n) f
+</pre>
+
+<DT><span class="strong">binomial_def_compute</span>
+<DD>
+<pre>
+|- (∀n. binomial n 0 = 1) ∧ (∀k. binomial 0 (NUMERAL (BIT1 k)) = 0) ∧
+   (∀k. binomial 0 (NUMERAL (BIT2 k)) = 0) ∧
+   (∀n k.
+      binomial (NUMERAL (BIT1 n)) (NUMERAL (BIT1 k)) =
+      binomial (NUMERAL (BIT1 n) − 1) (NUMERAL (BIT1 k)) +
+      binomial (NUMERAL (BIT1 n) − 1) (NUMERAL (BIT1 k) − 1)) ∧
+   (∀n k.
+      binomial (NUMERAL (BIT2 n)) (NUMERAL (BIT1 k)) =
+      binomial (NUMERAL (BIT1 n)) (NUMERAL (BIT1 k)) +
+      binomial (NUMERAL (BIT1 n)) (NUMERAL (BIT1 k) − 1)) ∧
+   (∀n k.
+      binomial (NUMERAL (BIT1 n)) (NUMERAL (BIT2 k)) =
+      binomial (NUMERAL (BIT1 n) − 1) (NUMERAL (BIT2 k)) +
+      binomial (NUMERAL (BIT1 n) − 1) (NUMERAL (BIT1 k))) ∧
+   ∀n k.
+     binomial (NUMERAL (BIT2 n)) (NUMERAL (BIT2 k)) =
+     binomial (NUMERAL (BIT1 n)) (NUMERAL (BIT2 k)) +
+     binomial (NUMERAL (BIT1 n)) (NUMERAL (BIT1 k))
+</pre>
+
+<DT><span class="strong">binomial_def</span>
+<DD>
+<pre>
+|- (∀n. binomial n 0 = 1) ∧ (∀k. binomial 0 (SUC k) = 0) ∧
+   ∀n k. binomial (SUC n) (SUC k) = binomial n (SUC k) + binomial n k
+</pre>
+
+<DT><span class="strong">binomial_ind</span>
+<DD>
+<pre>
+|- ∀P.
+     (∀n. P n 0) ∧ (∀k. P 0 (SUC k)) ∧
+     (∀n k. P n k ∧ P n (SUC k) ⇒ P (SUC n) (SUC k)) ⇒
+     ∀v v1. P v v1
+</pre>
+
+<DT><span class="strong">comp_FT_gate_thm</span>
+<DD>
+<pre>
+|- ∀p A B.
+     prob_space p ∧ A ∈ events p ∧ B ∈ events p ∧ indep p A B ⇒
+     (prob p (comp_FT_gate p (atomic A) (atomic B)) =
+      1 − (prob p A + prob p B − 2 * (prob p A * prob p B)))
+</pre>
+
+<DT><span class="strong">inhibit_FT_gate_thm</span>
+<DD>
+<pre>
+|- ∀p A B C.
+     prob_space p ∧ A ∈ events p ∧ B ∈ events p ∧ C ∈ events p ∧
+     mutual_indep p [A; B; C] ⇒
+     (prob p (inhibit_FT_gate p (atomic A) (atomic B) (atomic C)) =
+      (1 − (1 − prob p A) * (1 − prob p B)) * (1 − prob p C))
+</pre>
+
+<DT><span class="strong">indep_compl_event_nevents</span>
+<DD>
+<pre>
+|- ∀p A B C.
+     prob_space p ∧ A ∈ events p ∧ B ∈ events p ∧ C ∈ events p ∧
+     mutual_indep p [A; B; C] ⇒
+     (prob p (compl_pspace p C ∩ A ∩ B) =
+      prob p A * prob p B − prob p A * prob p B * prob p C)
+</pre>
+
+<DT><span class="strong">mutual_indep_append_sym</span>
+<DD>
+<pre>
+|- ∀L1 L p. mutual_indep p (L1 ++ L) ⇒ mutual_indep p (L ++ L1)
+</pre>
+
+<DT><span class="strong">XOR_FT_gate_thm</span>
+<DD>
+<pre>
+|- ∀a b p.
+     prob_space p ∧ a ∈ events p ∧ b ∈ events p ∧ indep p a b ⇒
+     (prob p (XOR_FT_gate p (atomic a) (atomic b)) =
+      prob p a * (1 − prob p b) + prob p b * (1 − prob p a))
+</pre>
+
+<DT><span class="strong">PROB_XOR_GATE1</span>
+<DD>
+<pre>
+|- ∀A B p.
+     prob_space p ∧ A ∈ events p ∧ B ∈ events p ⇒
+     (prob p ((p_space p DIFF A) ∩ B ∪ (p_space p DIFF B) ∩ A) =
+      prob p A + prob p B − 2 * prob p (A ∩ B))
+</pre>
+
+<DT><span class="strong">compl_event_nevent_empty</span>
+<DD>
+<pre>
+|- ∀p A. compl_pspace p A ∩ A = ∅
+</pre>
+
+<DT><span class="strong">prob_compl_A_INTER_B</span>
+<DD>
+<pre>
+|- ∀a b p.
+     prob_space p ∧ a ∈ events p ∧ b ∈ events p ⇒
+     (prob p (compl_pspace p a ∩ b) = prob p b − prob p (a ∩ b))
+</pre>
+
+<DT><span class="strong">PROB_XOR_GATE</span>
+<DD>
+<pre>
+|- ∀A B p.
+     prob_space p ∧ A ∈ events p ∧ B ∈ events p ⇒
+     (prob p (COMPL A ∩ B ∪ COMPL B ∩ A) =
+      prob p A + prob p B − 2 * prob p (A ∩ B))
+</pre>
+
+<DT><span class="strong">PROB_COMPL_SUBSET</span>
+<DD>
+<pre>
+|- ∀p s t.
+     prob_space p ∧ s ∈ events p ∧ t ∈ events p ∧ t ⊆ s ⇒
+     (prob p (s DIFF t) = prob p s − prob p t)
+</pre>
+
+<DT><span class="strong">xor_gate_temp2</span>
+<DD>
+<pre>
+|- ∀A B. A DIFF B = A DIFF A ∩ B
+</pre>
+
+<DT><span class="strong">xor_gate_temp1</span>
+<DD>
+<pre>
+|- ∀A B. COMPL A ∩ B ∪ COMPL B ∩ A = A DIFF B ∪ (B DIFF A)
+</pre>
+
+<DT><span class="strong">NOR_gate_thm</span>
+<DD>
+<pre>
+|- ∀p L.
+     ¬NULL L ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ∧ prob_space p ∧
+     mutual_indep p L ⇒
+     (prob p (NOR_FT_gate p L) = list_prod (one_minus_list (list_prob p L)))
+</pre>
+
+<DT><span class="strong">NAND_FT_gate</span>
+<DD>
+<pre>
+|- ∀p L1 L2.
+     prob_space p ∧ 1 ≤ LENGTH (L1 ++ L2) ∧
+     (∀x'. MEM x' (L1 ++ L2) ⇒ x' ∈ events p) ∧ mutual_indep p (L1 ++ L2) ⇒
+     (prob p (FTree p (AND (gate_list (compl_list p L1 ++ L2)))) =
+      list_prod (list_prob p (compl_list p L1)) * list_prod (list_prob p L2))
+</pre>
+
+<DT><span class="strong">NAND_eq_big_inter_alt_form</span>
+<DD>
+<pre>
+|- ∀p L1 L2.
+     prob_space p ∧ (∀x. MEM x (compl_list p L1 ++ L2) ⇒ x ∈ events p) ⇒
+     (big_inter p (compl_list p L1) ∩ big_inter p L2 =
+      FTree p (AND (gate_list (compl_list p L1 ++ L2))))
+</pre>
+
+<DT><span class="strong">AND_gate_append</span>
+<DD>
+<pre>
+|- ∀p h L1.
+     prob_space p ∧ (∀x. MEM x (h ++ L1) ⇒ x ∈ events p) ⇒
+     (FTree p (AND (gate_list h)) ∩ FTree p (AND (gate_list L1)) =
+      FTree p (AND (gate_list (h ++ L1))))
+</pre>
+
+<DT><span class="strong">OR_gate_thm</span>
+<DD>
+<pre>
+|- ∀p L.
+     ¬NULL L ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ∧ prob_space p ∧
+     mutual_indep p L ⇒
+     (prob p (FTree p (OR (gate_list L))) =
+      1 − list_prod (one_minus_list (list_prob p L)))
+</pre>
+
+<DT><span class="strong">OR_lem8</span>
+<DD>
+<pre>
+|- ∀L. one_minus_list L = MAP (λa. 1 − a) L
+</pre>
+
+<DT><span class="strong">OR_lem7</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ⇒
+     (one_minus_list (list_prob p L) = list_prob p (compl_list p L))
+</pre>
+
+<DT><span class="strong">OR_lem6</span>
+<DD>
+<pre>
+|- ∀p x L.
+     prob_space p ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ⇒
+     (prob p (FTree p (OR (gate_list L))) =
+      1 − prob p (FTree p (AND (gate_list (compl_list p L)))))
+</pre>
+
+<DT><span class="strong">OR_lem5</span>
+<DD>
+<pre>
+|- ∀p L. FTree p (AND (gate_list L)) = big_inter p L
+</pre>
+
+<DT><span class="strong">OR_lem4</span>
+<DD>
+<pre>
+|- ∀p L.
+     (∀x. MEM x L ⇒ x ∈ events p) ∧ prob_space p ∧
+     FTree p (OR (gate_list L)) ∈ events p ⇒
+     FTree p (OR (gate_list L)) ⊆ p_space p
+</pre>
+
+<DT><span class="strong">OR_lem3</span>
+<DD>
+<pre>
+|- ∀L p.
+     (∀x. MEM x L ⇒ x ∈ events p) ∧ prob_space p ⇒
+     FTree p (OR (gate_list L)) ∈ events p
+</pre>
+
+<DT><span class="strong">OR_lem2</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x. MEM x L ⇒ x ∈ events p) ⇒
+     (FTree p (AND (gate_list (compl_list p L))) =
+      p_space p DIFF FTree p (OR (gate_list L)))
+</pre>
+
+<DT><span class="strong">OR_lem1</span>
+<DD>
+<pre>
+|- ∀p s t. p_space p DIFF (s ∪ t) = (p_space p DIFF s) ∩ (p_space p DIFF t)
+</pre>
+
+<DT><span class="strong">prob_indep_big_inter2</span>
+<DD>
+<pre>
+|- ∀L1 L2 n p.
+     prob_space p ∧ mutual_indep p (L1 ++ L2) ∧
+     (∀x. MEM x (L1 ++ L2) ⇒ x ∈ events p) ∧ 1 ≤ LENGTH (L1 ++ L2) ⇒
+     (prob p (big_inter p (TAKE n (compl_list p L1)) ∩ big_inter p L2) =
+      list_prod (list_prob p (TAKE n (compl_list p L1))) *
+      list_prod (list_prob p L2))
+</pre>
+
+<DT><span class="strong">OR_gate_lem7</span>
+<DD>
+<pre>
+|- ∀L1 p.
+     prob_space p ∧ (∀x. MEM x L1 ⇒ x ∈ events p) ⇒
+     (L1 = compl_list p (compl_list p L1))
+</pre>
+
+<DT><span class="strong">OR_gate_lem6</span>
+<DD>
+<pre>
+|- ∀A C. A ∩ (p_space p DIFF C) = A ∩ p_space p DIFF A ∩ C
+</pre>
+
+<DT><span class="strong">OR_gate_lem5</span>
+<DD>
+<pre>
+|- ∀m L x. MEM x (TAKE m L) ⇒ MEM x L
+</pre>
+
+<DT><span class="strong">OR_gate_lem4</span>
+<DD>
+<pre>
+|- ∀p A C. A ∩ (p_space p DIFF C) = A ∩ p_space p DIFF A ∩ C
+</pre>
+
+<DT><span class="strong">OR_gate_lem3</span>
+<DD>
+<pre>
+|- ∀A B C D. A ∩ B ∩ C ∩ D = B ∩ C ∩ D ∩ A
+</pre>
+
+<DT><span class="strong">OR_gate_lem2</span>
+<DD>
+<pre>
+|- ∀L1 L2 Q. LENGTH (L1 ++ Q::L2) = LENGTH (Q::L1 ++ L2)
+</pre>
+
+<DT><span class="strong">OR_gate_lem1</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ⇒
+     (one_minus_list (list_prob p L) = list_prob p (compl_list p L))
+</pre>
+
+<DT><span class="strong">AND_gate_thm</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ ¬NULL L ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ∧
+     mutual_indep p L ⇒
+     (prob p (FTree p (AND (gate_list L))) = list_prod (list_prob p L))
+</pre>
+
+<DT><span class="strong">AND_gate_eq_big_inter</span>
+<DD>
+<pre>
+|- ∀p L. FTree p (AND (gate_list L)) = big_inter p L
+</pre>
+
+<DT><span class="strong">FTree_def</span>
+<DD>
+<pre>
+|- (∀p a. FTree p (atomic a) = a) ∧
+   (∀p a. FTree p (NOT a) = p_space p DIFF FTree p a) ∧
+   (∀p. FTree p (AND []) = p_space p) ∧
+   (∀xs x p. FTree p (AND (x::xs)) = FTree p x ∩ FTree p (AND xs)) ∧
+   (∀p. FTree p (OR []) = ∅) ∧
+   ∀xs x p. FTree p (OR (x::xs)) = FTree p x ∪ FTree p (OR xs)
+</pre>
+
+<DT><span class="strong">FTree_ind</span>
+<DD>
+<pre>
+|- ∀P.
+     (∀p a. P p (atomic a)) ∧ (∀p a. P p a ⇒ P p (NOT a)) ∧
+     (∀p. P p (AND [])) ∧
+     (∀p x xs. P p x ∧ P p (AND xs) ⇒ P p (AND (x::xs))) ∧ (∀p. P p (OR [])) ∧
+     (∀p x xs. P p x ∧ P p (OR xs) ⇒ P p (OR (x::xs))) ⇒
+     ∀v v1. P v v1
+</pre>
+
+<DT><span class="strong">gate_induction</span>
+<DD>
+<pre>
+|- ∀P0 P1.
+     (∀l. P1 l ⇒ P0 (AND l)) ∧ (∀l. P1 l ⇒ P0 (OR l)) ∧
+     (∀g. P0 g ⇒ P0 (NOT g)) ∧ (∀f. P0 (atomic f)) ∧ P1 [] ∧
+     (∀g l. P0 g ∧ P1 l ⇒ P1 (g::l)) ⇒
+     (∀g. P0 g) ∧ ∀l. P1 l
+</pre>
+
+<DT><span class="strong">gate_Axiom</span>
+<DD>
+<pre>
+|- ∀f0 f1 f2 f3 f4 f5.
+     ∃fn0 fn1.
+       (∀a. fn0 (AND a) = f0 a (fn1 a)) ∧ (∀a. fn0 (OR a) = f1 a (fn1 a)) ∧
+       (∀a. fn0 (NOT a) = f2 a (fn0 a)) ∧ (∀a. fn0 (atomic a) = f3 a) ∧
+       (fn1 [] = f4) ∧ ∀a0 a1. fn1 (a0::a1) = f5 a0 a1 (fn0 a0) (fn1 a1)
+</pre>
+
+<DT><span class="strong">gate_nchotomy</span>
+<DD>
+<pre>
+|- ∀gg.
+     (∃l. gg = AND l) ∨ (∃l. gg = OR l) ∨ (∃g. gg = NOT g) ∨ ∃f. gg = atomic f
+</pre>
+
+<DT><span class="strong">gate_case_cong</span>
+<DD>
+<pre>
+|- ∀M M' f f1 f2 f3.
+     (M = M') ∧ (∀a. (M' = AND a) ⇒ (f a = f' a)) ∧
+     (∀a. (M' = OR a) ⇒ (f1 a = f1' a)) ∧
+     (∀a. (M' = NOT a) ⇒ (f2 a = f2' a)) ∧
+     (∀a. (M' = atomic a) ⇒ (f3 a = f3' a)) ⇒
+     (gate_CASE M f f1 f2 f3 = gate_CASE M' f' f1' f2' f3')
+</pre>
+
+<DT><span class="strong">gate_distinct</span>
+<DD>
+<pre>
+|- (∀a' a. AND a ≠ OR a') ∧ (∀a' a. AND a ≠ NOT a') ∧
+   (∀a' a. AND a ≠ atomic a') ∧ (∀a' a. OR a ≠ NOT a') ∧
+   (∀a' a. OR a ≠ atomic a') ∧ ∀a' a. NOT a ≠ atomic a'
+</pre>
+
+<DT><span class="strong">gate_11</span>
+<DD>
+<pre>
+|- (∀a a'. (AND a = AND a') ⇔ (a = a')) ∧ (∀a a'. (OR a = OR a') ⇔ (a = a')) ∧
+   (∀a a'. (NOT a = NOT a') ⇔ (a = a')) ∧
+   ∀a a'. (atomic a = atomic a') ⇔ (a = a')
+</pre>
+
+<DT><span class="strong">datatype_gate</span>
+<DD>
+<pre>
+|- DATATYPE (gate AND OR NOT atomic)
+</pre>
+
+<DT><span class="strong">IN_UNIONL</span>
+<DD>
+<pre>
+|- ∀l v. v ∈ UNIONL l ⇔ ∃s. MEM s l ∧ v ∈ s
+</pre>
+
+<DT><span class="strong">BINOMIAL_DEF6</span>
+<DD>
+<pre>
+|- ∀n. binomial (SUC n) 1 = SUC n
+</pre>
+
+<DT><span class="strong">EXP_PASCAL_REAL</span>
+<DD>
+<pre>
+|- ∀a b n.
+     (a + b) pow n =
+     SIGMA (λx. &binomial n x * a pow (n − x) * b pow x) (count (SUC n))
+</pre>
+
+<DT><span class="strong">EXP_PASCAL_REAL1</span>
+<DD>
+<pre>
+|- ∀a b n.
+     (a + b) pow n =
+     sum_set (count (SUC n)) (λx. &binomial n x * a pow (n − x) * b pow x)
+</pre>
+
+<DT><span class="strong">num_neq</span>
+<DD>
+<pre>
+|- ∀a b. a ≠ b ⇔ a < b ∨ b < a
+</pre>
+
+<DT><span class="strong">disj_thm</span>
+<DD>
+<pre>
+|- ∀X m n.
+     m ≠ n ⇒
+     DISJOINT (PREIMAGE X {Normal (&m)} ∩ p_space p)
+       (PREIMAGE X {Normal (&n)} ∩ p_space p)
+</pre>
+
+<DT><span class="strong">k_out_n_lemma1</span>
+<DD>
+<pre>
+|- ∀p s n k.
+     prob_space p ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈ (count n -> events p) ⇒
+     IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) (count n) ⊆ events p
+</pre>
+
+<DT><span class="strong">k_out_n_lemma2</span>
+<DD>
+<pre>
+|- ∀k n. {x | k ≤ x ∧ x < n} = {x | k ≤ x} ∩ {x | x < n}
+</pre>
+
+<DT><span class="strong">k_out_ntemp1</span>
+<DD>
+<pre>
+|- ∀k n. n INSERT {x | k ≤ x ∧ x < n} = n INSERT {x | x < n ∧ k ≤ x}
+</pre>
+
+<DT><span class="strong">k_out_n_temp2</span>
+<DD>
+<pre>
+|- ∀k n. {x | x < n ∧ k ≤ x} = {x | x < n} ∩ {x | k ≤ x}
+</pre>
+
+<DT><span class="strong">k_out_n_lemma3</span>
+<DD>
+<pre>
+|- ∀k n. FINITE {x | k ≤ x ∧ x < n}
+</pre>
+
+<DT><span class="strong">k_out_n_lemma4</span>
+<DD>
+<pre>
+|- ∀k n. k < n ⇒ ({x | k ≤ x ∧ x < n} ∪ count k = count n)
+</pre>
+
+<DT><span class="strong">k_out_n_temp5</span>
+<DD>
+<pre>
+|- ∀p n k X.
+     prob_space p ∧ k < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC n) -> events p) ∧
+     (s =
+      BIGUNION
+        (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+           {x | k ≤ x ∧ x < SUC n})) ⇒
+     (sum (k,SUC n − k)
+        (prob p o (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)) =
+      prob p s)
+</pre>
+
+<DT><span class="strong">k_out_n_lemma5</span>
+<DD>
+<pre>
+|- ∀p s n k X.
+     prob_space p ∧ k < n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈ (count n -> events p) ∧
+     (s =
+      BIGUNION
+        (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+           {x | k ≤ x ∧ x < n})) ⇒
+     (sum (k,n − k) (prob p o (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)) =
+      prob p s)
+</pre>
+
+<DT><span class="strong">k_out_n_lemma6_new</span>
+<DD>
+<pre>
+|- ∀p s n k X pr.
+     prob_space p ∧ k < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC n) -> events p) ∧
+     (s =
+      BIGUNION
+        (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+           {x | k ≤ x ∧ x < SUC n})) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial (SUC n) x * pr pow x * (1 − pr) pow (SUC n − x)) ⇒
+     (sum (k,SUC n − k)
+        (λx. &binomial (SUC n) x * pr pow x * (1 − pr) pow (SUC n − x)) =
+      prob p s)
+</pre>
+
+<DT><span class="strong">k_out_n_lemma6_new1</span>
+<DD>
+<pre>
+|- ∀p s n k X pr.
+     prob_space p ∧ k < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC n) -> events p) ∧
+     (s =
+      BIGUNION
+        (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+           {x | k ≤ x ∧ x < SUC n})) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial n x * pr pow x * (1 − pr) pow (n − x)) ⇒
+     (sum (k,SUC n − k)
+        (λx. &binomial n x * pr pow x * (1 − pr) pow (n − x)) =
+      prob p s)
+</pre>
+
+<DT><span class="strong">k_out_n_lemma6</span>
+<DD>
+<pre>
+|- ∀p s n k X pr.
+     prob_space p ∧ k < n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈ (count n -> events p) ∧
+     (s =
+      BIGUNION
+        (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+           {x | k ≤ x ∧ x < n})) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial n x * pr pow x * (1 − pr) pow (n − x)) ⇒
+     (sum (k,n − k) (λx. &binomial n x * pr pow x * (1 − pr) pow (n − x)) =
+      prob p s)
+</pre>
+
+<DT><span class="strong">k_out_n_RBD</span>
+<DD>
+<pre>
+|- ∀p n k X pr.
+     prob_space p ∧ k < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC n) -> events p) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial (SUC n) x * pr pow x * (1 − pr) pow (SUC n − x)) ⇒
+     (prob p
+        (BIGUNION
+           (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+              {x | k ≤ x ∧ x < SUC n})) =
+      sum (k,SUC n − k)
+        (λx. &binomial (SUC n) x * pr pow x * (1 − pr) pow (SUC n − x)))
+</pre>
+
+<DT><span class="strong">k_out_n_RBD_v1</span>
+<DD>
+<pre>
+|- ∀p n k X pr.
+     prob_space p ∧ k < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC n) -> events p) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial n x * pr pow x * (1 − pr) pow (n − x)) ⇒
+     (prob p (K_out_N_struct p X k n) =
+      sum (k,SUC n − k) (λx. &binomial n x * pr pow x * (1 − pr) pow (n − x)))
+</pre>
+
+<DT><span class="strong">K_out_N_Parallel_Struct</span>
+<DD>
+<pre>
+|- ∀p n X pr.
+     prob_space p ∧ 1 < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC n) -> events p) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial n x * pr pow x * (1 − pr) pow (n − x)) ⇒
+     (prob p
+        (BIGUNION
+           (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+              {x | 1 ≤ x ∧ x < SUC n})) =
+      1 − (1 − pr) pow n)
+</pre>
+
+<DT><span class="strong">K_out_N_Series_Struct</span>
+<DD>
+<pre>
+|- ∀p n X pr.
+     prob_space p ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC n) -> events p) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial n x * pr pow x * (1 − pr) pow (n − x)) ⇒
+     (prob p
+        (BIGUNION
+           (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+              {x | n ≤ x ∧ x < SUC n})) =
+      pr pow n)
+</pre>
+
+<DT><span class="strong">majority_voting_FT_gate_thm</span>
+<DD>
+<pre>
+|- ∀p n k X pr.
+     prob_space p ∧ k < SUC n ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC n) -> events p) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial (SUC n) x * pr pow x * (1 − pr) pow (SUC n − x)) ⇒
+     (prob p (majority_voting_FT_gate p X k n) =
+      sum (k,SUC n − k)
+        (λx. &binomial (SUC n) x * pr pow x * (1 − pr) pow (SUC n − x)))
+</pre>
+
+<DT><span class="strong">SUBSET_INSERT_EXISTS_NEW</span>
+<DD>
+<pre>
+|- ∀s x t. s ⊆ x INSERT t ⇔ s ⊆ t ∨ ∃u. u ⊆ t ∧ (s = x INSERT u)
+</pre>
+
+<DT><span class="strong">FINITE_SUBSETS_RESTRICT_NEW</span>
+<DD>
+<pre>
+|- ∀s p. FINITE s ⇒ FINITE {t | t ⊆ s ∧ p t}
+</pre>
+
+<DT><span class="strong">FINITE_SUBSETS_RESTRICT_NEW1</span>
+<DD>
+<pre>
+|- ∀s p. FINITE s ⇒ FINITE {t | t ⊆ s}
+</pre>
+
+<DT><span class="strong">lemma_NEW</span>
+<DD>
+<pre>
+|- {t | t ⊆ a INSERT s ∧ P t} =
+   {t | t ⊆ s ∧ P t} ∪ {a INSERT t | t | t ⊆ s ∧ P (a INSERT t)}
+</pre>
+
+<DT><span class="strong">temp1</span>
+<DD>
+<pre>
+|- ∀P. (∀s n. has_size s n ⇒ P s) ⇒ ∀s. FINITE s ⇒ P s
+</pre>
+
+<DT><span class="strong">temp3</span>
+<DD>
+<pre>
+|- ∀P. (∀n. (∀m. m < n ⇒ P m) ⇒ P n) ⇒ ∀n. P n
+</pre>
+
+<DT><span class="strong">temp2</span>
+<DD>
+<pre>
+|- (∀P f A x n.
+      (∀s t. P s ∧ P t ∧ DISJOINT s t ⇒ (f (s ∪ t) = f s + f t)) ∧ P ∅ ∧
+      (∀s t. P s ∧ P t ⇒ P (s ∩ t) ∧ P (s ∪ t) ∧ P (s DIFF t)) ∧
+      has_size A n ∧ (∀a. a ∈ A ⇒ P (x a)) ⇒
+      (f (BIGUNION (IMAGE x A)) =
+       sum_set {B | B ⊆ A ∧ B ≠ ∅}
+         (λB. -1 pow (CARD B + 1) * f (BIGINTER (IMAGE x B))))) ⇒
+   ∀P f A x.
+     (∀s t. P s ∧ P t ∧ DISJOINT s t ⇒ (f (s ∪ t) = f s + f t)) ∧ P ∅ ∧
+     (∀s t. P s ∧ P t ⇒ P (s ∩ t) ∧ P (s ∪ t) ∧ P (s DIFF t)) ∧ FINITE A ∧
+     (∀a. a ∈ A ⇒ P (x a)) ⇒
+     (f (BIGUNION (IMAGE x A)) =
+      sum_set {B | B ⊆ A ∧ B ≠ ∅}
+        (λB. -1 pow (CARD B + 1) * f (BIGINTER (IMAGE x B))))
+</pre>
+
+<DT><span class="strong">temp4</span>
+<DD>
+<pre>
+|- ∀A. has_size s 0 ⇔ (s = ∅)
+</pre>
+
+<DT><span class="strong">has_size_suc</span>
+<DD>
+<pre>
+|- ∀s n. has_size s (SUC n) ⇔ s ≠ ∅ ∧ ∀a. a ∈ s ⇒ has_size (s DELETE a) n
+</pre>
+
+<DT><span class="strong">FORALL_INSERT</span>
+<DD>
+<pre>
+|- ∀P a s. (∀x. x ∈ a INSERT s ⇒ P x) ⇔ P a ∧ ∀x. x ∈ s ⇒ P x
+</pre>
+
+<DT><span class="strong">INTER_BIGUNION</span>
+<DD>
+<pre>
+|- (∀s t. BIGUNION s ∩ t = BIGUNION {x ∩ t | x ∈ s}) ∧
+   ∀s t. t ∩ BIGUNION s = BIGUNION {t ∩ x | x ∈ s}
+</pre>
+
+<DT><span class="strong">has_size_clauses</span>
+<DD>
+<pre>
+|- (has_size s 0 ⇔ (s = ∅)) ∧
+   (has_size s (SUC n) ⇔ ∃a t. has_size t n ∧ a ∉ t ∧ (s = a INSERT t))
+</pre>
+
+<DT><span class="strong">temp5</span>
+<DD>
+<pre>
+|- ∀s t. s ∪ (t DIFF s) = s ∪ t
+</pre>
+
+<DT><span class="strong">incl_excl_temp1</span>
+<DD>
+<pre>
+|- ∀fa fas s s'. (fa + s − fas = s + s') ⇔ (fa − fas = s')
+</pre>
+
+<DT><span class="strong">temp6</span>
+<DD>
+<pre>
+|- ∀s t. s ∩ t ∪ (t DIFF s) = t
+</pre>
+
+<DT><span class="strong">simple_image_gen</span>
+<DD>
+<pre>
+|- ∀f P. {f s | P s} = IMAGE f {s | P s}
+</pre>
+
+<DT><span class="strong">FINITE_RESTRICT</span>
+<DD>
+<pre>
+|- ∀s P. {x | x ∈ s ∧ P x} ⊆ s
+</pre>
+
+<DT><span class="strong">incl_excl_temp2</span>
+<DD>
+<pre>
+|- ∀a b x. (x − a = x + b) ⇔ (b = -a)
+</pre>
+
+<DT><span class="strong">incl_excl_temp3</span>
+<DD>
+<pre>
+|- ∀f s. BIGINTER (IMAGE f s) = {y | ∀x. x ∈ s ⇒ y ∈ f x}
+</pre>
+
+<DT><span class="strong">incl_excl_temp4</span>
+<DD>
+<pre>
+|- ∀P e. {s | P s ∧ s ≠ e} = {s | P s} DELETE e
+</pre>
+
+<DT><span class="strong">incl_excl_temp5</span>
+<DD>
+<pre>
+|- ∀x s. x ∈ s ⇒ (x INSERT s = s)
+</pre>
+
+<DT><span class="strong">incl_excl_temp6</span>
+<DD>
+<pre>
+|- ∀s. ∅ ∈ {B | B ⊆ s}
+</pre>
+
+<DT><span class="strong">incl_excl_temp7</span>
+<DD>
+<pre>
+|- ∀a b c. (a = b − c) ⇔ (b = c + a)
+</pre>
+
+<DT><span class="strong">incl_excl_temp8</span>
+<DD>
+<pre>
+|- ∀f e s. FINITE s ⇒ (sum_set (s DELETE e) f = sum_set (e INSERT s) f − f e)
+</pre>
+
+<DT><span class="strong">incl_excl_temp9</span>
+<DD>
+<pre>
+|- ∀f e s. e ∈ s ∧ FINITE s ⇒ (sum_set (s DELETE e) f = sum_set s f − f e)
+</pre>
+
+<DT><span class="strong">BIGINTER_SET</span>
+<DD>
+<pre>
+|- ∀s p.
+     FINITE s ∧ prob_space p ⇒
+     (BIGINTER s ∩ p_space p = inter_list p (SET_TO_LIST s))
+</pre>
+
+<DT><span class="strong">REAL_SUM_IMAGE_IMAGE1</span>
+<DD>
+<pre>
+|- ∀P f' f.
+     FINITE P ∧ INJ f' P (IMAGE f' P) ⇒
+     (SIGMA f (IMAGE f' P) = SIGMA (f o f') P)
+</pre>
+
+<DT><span class="strong">INCLUSION_EXCLUSION_RESTRICTED</span>
+<DD>
+<pre>
+|- ∀P f A x.
+     (∀s t. P s ∧ P t ∧ DISJOINT s t ⇒ (f (s ∪ t) = f s + f t)) ∧ P ∅ ∧
+     (∀s t. P s ∧ P t ⇒ P (s ∩ t) ∧ P (s ∪ t) ∧ P (s DIFF t)) ∧ FINITE A ∧
+     (∀a. a ∈ A ⇒ P (x a)) ⇒
+     (f (BIGUNION (IMAGE x A)) =
+      sum_set {B | B ⊆ A ∧ B ≠ ∅}
+        (λB. -1 pow (CARD B + 1) * f (BIGINTER (IMAGE x B))))
+</pre>
+
+<DT><span class="strong">INCLUSION_EXCLUSION_RESTRICTED_REAL</span>
+<DD>
+<pre>
+|- ∀P f A.
+     (∀s t. P s ∧ P t ∧ DISJOINT s t ⇒ (f (s ∪ t) = f s + f t)) ∧ P ∅ ∧
+     (∀s t. P s ∧ P t ⇒ P (s ∩ t) ∧ P (s ∪ t) ∧ P (s DIFF t)) ∧ FINITE A ∧
+     (∀a. a ∈ A ⇒ P a) ⇒
+     (f (BIGUNION A) =
+      sum_set {B | B ⊆ A ∧ B ≠ ∅} (λB. -1 pow (CARD B + 1) * f (BIGINTER B)))
+</pre>
+
+<DT><span class="strong">PROB_INCLUSION_EXCLUSION</span>
+<DD>
+<pre>
+|- ∀p s.
+     prob_space p ∧ (∀a. a ∈ s ⇒ a ∈ events p) ∧ FINITE s ∧
+     (∀k. k ∈ s ⇒ FINITE k) ⇒
+     (prob p (BIGUNION s) =
+      sum_set {t | t ⊆ s ∧ t ≠ ∅}
+        (λt. -1 pow (CARD t + 1) * prob p (BIGINTER t)))
+</pre>
+
+<DT><span class="strong">PROB_INCLUSION_EXCLUSION_list</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x. MEM x L ⇒ x ∈ events p) ⇒
+     (prob p (BIGUNION (set L)) =
+      sum_set {t | t ⊆ set L ∧ t ≠ ∅}
+        (λt. -1 pow (CARD t + 1) * prob p (BIGINTER t)))
+</pre>
+
+<DT><span class="strong">BIGUNION_EQ_UNION_LIST</span>
+<DD>
+<pre>
+|- ∀L. BIGUNION (set L) = union_list L
+</pre>
+
+<DT><span class="strong">PROB_INCLUSION_EXCLUSION_PRINCIPLE</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x. MEM x L ⇒ x ∈ events p) ⇒
+     (prob p (union_list L) =
+      sum_set {t | t ⊆ set L ∧ t ≠ ∅}
+        (λt. -1 pow (CARD t + 1) * prob p (BIGINTER t)))
+</pre>
+
+</DL>
+
+
+
+<hr>
+</body>
+</html>

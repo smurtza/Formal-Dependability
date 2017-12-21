@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head><title>Theory: frogp</title><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<style type="text/css">
+<!--
+  body {background: #faf0e6; color: #191970; }
+  span.freevar  { color: blue}
+  span.boundvar { color: green}
+  span.typevar  { color: purple}
+  span.type     { color: teal}
+  span.strong   { color: black; font-weight: bold}
+  span.vstrong  { color: black; 
+                  font-weight: bold;
+                  font-size: larger}
+  h1 {color: black}
+  th {color: crimson}
+-->
+</style>
+</head>
+<body>
+<h1>Theory "frogp"</h1>
+<span class="vstrong">Parents</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href = "ASN_gatewayTheory.html"><span class="strong">ASN_gateway</span></a>
+
+<h1>Signature</h1>
+<center>
+<table BORDER=4 CELLPADDING=10 CELLSPACING=1>
+
+    <tr>
+    <th>
+    Constant
+    <th>
+    Type<tr><td>
+            <span class="strong">UNIONL</span>
+            <td>
+            :α event list -> α event
+    <tr><td>
+        <span class="strong">len_mem_list_le</span>
+        <td>
+        :num -> α list list event
+    <tr><td>
+        <span class="strong">len_mem_list_le_tupled</span>
+        <td>
+        :(num # α list list) event
+    <tr><td>
+        <span class="strong">pipeline</span>
+        <td>
+        :α event # α event event # (α event -> real) -> α event list -> real
+    <tr><td>
+        <span class="strong">rel_pipeline_z1</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) -> num -> num -> real
+    <tr><td>
+        <span class="strong">rel_pipeline_z1_tupled</span>
+        <td>
+        :(α event # α event event # (α event -> real)) #
+         (α -> extreal) # num # num -> real
+    <tr><td>
+        <span class="strong">rel_pipeline_z2</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list -> real -> real
+    <tr><td>
+        <span class="strong">rel_pipeline_z4</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α event list list ->
+         α event list list -> α event list list -> β -> real
+
+</table>
+</center>
+
+<h1>Definitions</h1>
+<DL>
+<DT><span class="strong">UNIONL_def</span>
+<DD>
+<pre>
+|- (UNIONL [] = ∅) ∧ ∀s ss. UNIONL (s::ss) = s ∪ UNIONL ss
+</pre>
+
+<DT><span class="strong">pipeline_def</span>
+<DD>
+<pre>
+|- ∀p L. pipeline p L = prob p (rbd_struct p (series (rbd_list L)))
+</pre>
+
+<DT><span class="strong">rel_pipeline_z1_tupled_primitive_def</span>
+<DD>
+<pre>
+|- rel_pipeline_z1_tupled =
+   WFREC (@R. WF R)
+     (λrel_pipeline_z1_tupled a.
+        case a of
+          (p,X,2,3) =>
+            I
+              (prob p
+                 (BIGUNION
+                    (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+                       {x | 2 ≤ x ∧ x < SUC 3})))
+        | (p,X,2,v9) => ARB
+        | (p,X,v6,v5) => ARB)
+</pre>
+
+<DT><span class="strong">rel_pipeline_z1_curried_def</span>
+<DD>
+<pre>
+|- ∀x x1 x2 x3.
+     rel_pipeline_z1 x x1 x2 x3 = rel_pipeline_z1_tupled (x,x1,x2,x3)
+</pre>
+
+<DT><span class="strong">rel_pipeline_z2_def</span>
+<DD>
+<pre>
+|- ∀p L t.
+     rel_pipeline_z2 p L t =
+     prob p
+       (rbd_struct p
+          ((series of (λa. parallel (rbd_list (rel_event_list p a t)))) L))
+</pre>
+
+<DT><span class="strong">len_mem_list_le_tupled_primitive_def</span>
+<DD>
+<pre>
+|- len_mem_list_le_tupled =
+   WFREC (@R. WF R)
+     (λlen_mem_list_le_tupled a.
+        case a of (3,L) => I (∀x. MEM x L ⇒ LENGTH x ≤ 3) | (v2,L) => ARB)
+</pre>
+
+<DT><span class="strong">len_mem_list_le_curried_def</span>
+<DD>
+<pre>
+|- ∀x x1. len_mem_list_le x x1 ⇔ len_mem_list_le_tupled (x,x1)
+</pre>
+
+<DT><span class="strong">rel_pipeline_z4_def</span>
+<DD>
+<pre>
+|- ∀p L1 L2 L3 t.
+     rel_pipeline_z4 p L1 L2 L3 t =
+     prob p
+       (rbd_struct p ((series of (λa. parallel (rbd_list a))) L1) ∩
+        rbd_struct p ((series of (λa. parallel (rbd_list a))) L2) ∩
+        rbd_struct p ((series of (λa. parallel (rbd_list a))) L3))
+</pre>
+
+</DL>
+
+
+<hr>
+
+<hr>
+<h1>Theorems</h1>
+<DL>
+<DT><span class="strong">IN_UNIONL</span>
+<DD>
+<pre>
+|- ∀l v. v ∈ UNIONL l ⇔ ∃s. MEM s l ∧ v ∈ s
+</pre>
+
+<DT><span class="strong">rel_pipeline_z1_ind</span>
+<DD>
+<pre>
+|- ∀P.
+     (∀p X. P p X 2 3) ∧ (∀v14 v13 v12. P v14 v13 2 v12) ∧
+     (∀v18 v17 v15 v16. P v18 v17 v15 v16) ⇒
+     ∀v v1 v2 v3. P v v1 v2 v3
+</pre>
+
+<DT><span class="strong">rel_pipeline_z1_def</span>
+<DD>
+<pre>
+|- rel_pipeline_z1 p X 2 3 =
+   prob p
+     (BIGUNION
+        (IMAGE (λx. PREIMAGE X {Normal (&x)} ∩ p_space p)
+           {x | 2 ≤ x ∧ x < SUC 3}))
+</pre>
+
+<DT><span class="strong">series_exp_list_sum</span>
+<DD>
+<pre>
+|- ∀p t L C.
+     0 ≤ t ∧ prob_space p ∧ exp_dist_list p L C ∧ (LENGTH C = LENGTH L) ∧
+     (∀z. MEM z (rel_event_list p L t) ⇒ z ∈ events p) ⇒
+     (list_prod (list_prob p (rel_event_list p L t)) =
+      exp_func t (list_sum C))
+</pre>
+
+<DT><span class="strong">rel_pipeline_series</span>
+<DD>
+<pre>
+|- ∀p L t C.
+     0 ≤ t ∧ prob_space p ∧ exp_dist_list p L C ∧ (LENGTH C = LENGTH L) ∧
+     ¬NULL (rel_event_list p L t) ∧ mutual_indep p (rel_event_list p L t) ∧
+     (∀x. MEM x (rel_event_list p L t) ⇒ x ∈ events p) ⇒
+     (pipeline p (rel_event_list p L t) = exp (-list_sum C * t))
+</pre>
+
+<DT><span class="strong">rel_pipeline_z1_thm</span>
+<DD>
+<pre>
+|- ∀p p' X C L t.
+     prob_space p ∧ prob_space p' ∧
+     (∀x. MEM x (rel_event_list p' L t) ⇒ x ∈ events p') ∧
+     (λx. PREIMAGE X {Normal (&x)} ∩ p_space p) ∈
+     (count (SUC 3) -> events p) ∧
+     (∀x.
+        distribution p X {Normal (&x)} =
+        &binomial 3 x * pipeline p' (rel_event_list p' L t) pow x *
+        (1 − pipeline p' (rel_event_list p' L t)) pow (3 − x)) ∧
+     ¬NULL (rel_event_list p' L t) ∧ 0 ≤ t ∧ exp_dist_list p' L C ∧
+     (LENGTH C = LENGTH L) ∧ mutual_indep p' (rel_event_list p' L t) ⇒
+     (rel_pipeline_z1 p X 2 3 =
+      3 * exp (2 * -(list_sum C * t)) * (1 − exp (-(list_sum C * t))) +
+      exp (3 * -(list_sum C * t)))
+</pre>
+
+<DT><span class="strong">len_mem_list_le_ind</span>
+<DD>
+<pre>
+|- ∀P. (∀L. P 3 L) ∧ (∀v5 v6. P v5 v6) ⇒ ∀v v1. P v v1
+</pre>
+
+<DT><span class="strong">len_mem_list_le_def</span>
+<DD>
+<pre>
+|- len_mem_list_le 3 L ⇔ ∀x. MEM x L ⇒ LENGTH x ≤ 3
+</pre>
+
+<DT><span class="strong">rel_pipeline_z2_thm</span>
+<DD>
+<pre>
+|- ∀L C p t.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (two_dim_rel_event_list p L t)) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (two_dim_rel_event_list p L t)) ∧
+     (LENGTH C = LENGTH L) ∧ (∀n. LENGTH (EL n L) = LENGTH (EL n C)) ∧
+     two_dim_exp_dist_list p L C ∧ len_mem_list_le 3 L ⇒
+     (rel_pipeline_z2 p L t =
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        C)
+</pre>
+
+<DT><span class="strong">rel_pipeline_z3_lemma4</span>
+<DD>
+<pre>
+|- ∀L1 L2 p.
+     (∀z. MEM z (L1 ++ L2) ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (L1 ++ L2)) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (L1 ++ L2)) ⇒
+     (prob p
+        (rbd_struct p ((series of (λa. parallel (rbd_list a))) L1) ∩
+         rbd_struct p ((series of (λa. parallel (rbd_list a))) L2)) =
+      prob p (rbd_struct p ((series of (λa. parallel (rbd_list a))) L1)) *
+      prob p (rbd_struct p ((series of (λa. parallel (rbd_list a))) L2)))
+</pre>
+
+<DT><span class="strong">rel_pipeline_z3_THM</span>
+<DD>
+<pre>
+|- ∀L1 L2 C1 C2 p t.
+     (∀z. MEM z (L1 ++ L2) ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'.
+        MEM x' (FLAT (two_dim_rel_event_list p (L1 ++ L2) t)) ⇒
+        x' ∈ events p) ∧
+     mutual_indep p (FLAT (two_dim_rel_event_list p (L1 ++ L2) t)) ∧
+     (LENGTH C1 = LENGTH L1) ∧ (LENGTH C2 = LENGTH L2) ∧
+     (∀n. LENGTH (EL n L1) = LENGTH (EL n C1)) ∧
+     (∀n. LENGTH (EL n L2) = LENGTH (EL n C2)) ∧
+     two_dim_exp_dist_list p L1 C1 ∧ two_dim_exp_dist_list p L2 C2 ∧
+     len_mem_list_le 2 L1 ∧ len_mem_list_le 2 L2 ⇒
+     (prob p
+        (rbd_struct p
+           ((series of (λa. parallel (rbd_list (rel_event_list p a t)))) L1) ∩
+         rbd_struct p
+           ((series of (λa. parallel (rbd_list (rel_event_list p a t))))
+              L2)) =
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        C1 *
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        C2)
+</pre>
+
+<DT><span class="strong">rel_pipeline_z4_lemma2</span>
+<DD>
+<pre>
+|- ∀L1 L2 L3 p.
+     (∀z. MEM z (L1 ++ L2 ++ L3) ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (L1 ++ L2 ++ L3)) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (L1 ++ L2 ++ L3)) ⇒
+     (prob p
+        (rbd_struct p ((series of (λa. parallel (rbd_list a))) L1) ∩
+         rbd_struct p ((series of (λa. parallel (rbd_list a))) L2) ∩
+         rbd_struct p ((series of (λa. parallel (rbd_list a))) L3)) =
+      prob p (rbd_struct p ((series of (λa. parallel (rbd_list a))) L1)) *
+      prob p
+        (rbd_struct p ((series of (λa. parallel (rbd_list a))) L2) ∩
+         rbd_struct p ((series of (λa. parallel (rbd_list a))) L3)))
+</pre>
+
+<DT><span class="strong">rel_pipeline_z4_THM</span>
+<DD>
+<pre>
+|- ∀L1 L2 L3 C1 C2 C3 p t.
+     (∀z. MEM z (L1 ++ L2 ++ L3) ⇒ ¬NULL z) ∧ 0 ≤ t ∧ prob_space p ∧
+     (∀x'.
+        MEM x' (FLAT (two_dim_rel_event_list p (L1 ++ L2 ++ L3) t)) ⇒
+        x' ∈ events p) ∧
+     mutual_indep p (FLAT (two_dim_rel_event_list p (L1 ++ L2 ++ L3) t)) ∧
+     (LENGTH C1 = LENGTH L1) ∧ (LENGTH C2 = LENGTH L2) ∧
+     (LENGTH C3 = LENGTH L3) ∧ (∀n. LENGTH (EL n L1) = LENGTH (EL n C1)) ∧
+     (∀n. LENGTH (EL n L2) = LENGTH (EL n C2)) ∧
+     (∀n. LENGTH (EL n L3) = LENGTH (EL n C3)) ∧
+     two_dim_exp_dist_list p L1 C1 ∧ two_dim_exp_dist_list p L2 C2 ∧
+     two_dim_exp_dist_list p L3 C3 ∧ len_mem_list_le 2 L1 ∧
+     len_mem_list_le 2 L2 ∧ len_mem_list_le 2 L3 ⇒
+     (prob p
+        (rbd_struct p
+           ((series of (λa. parallel (rbd_list (rel_event_list p a t)))) L1) ∩
+         rbd_struct p
+           ((series of (λa. parallel (rbd_list (rel_event_list p a t)))) L2) ∩
+         rbd_struct p
+           ((series of (λa. parallel (rbd_list (rel_event_list p a t))))
+              L3)) =
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        C1 *
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        C2 *
+      (list_prod of (λa. 1 − list_prod (one_minus_list (exp_func_list a t))))
+        C3)
+</pre>
+
+</DL>
+
+
+
+<hr>
+</body>
+</html>

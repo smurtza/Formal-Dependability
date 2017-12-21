@@ -1,0 +1,1129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head><title>Theory: RBD</title><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<style type="text/css">
+<!--
+  body {background: #faf0e6; color: #191970; }
+  span.freevar  { color: blue}
+  span.boundvar { color: green}
+  span.typevar  { color: purple}
+  span.type     { color: teal}
+  span.strong   { color: black; font-weight: bold}
+  span.vstrong  { color: black; 
+                  font-weight: bold;
+                  font-size: larger}
+  h1 {color: black}
+  th {color: crimson}
+-->
+</style>
+</head>
+<body>
+<h1>Theory "RBD"</h1>
+<span class="vstrong">Parents</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href = "sortingTheory.html"><span class="strong">sorting</span></a>&nbsp;&nbsp;
+    <a href = "probabilityTheory.html"><span class="strong">probability</span></a>
+
+<h1>Signature</h1>
+<center>
+<table BORDER=4 CELLPADDING=10 CELLSPACING=1>
+
+    <tr> <th> Type <th> Arity<tr><td> <span class="strong">rbd</span> <td> 1
+    <tr>
+    <th>
+    Constant
+    <th>
+    Type<tr><td>
+            <span class="strong">UNIONL</span>
+            <td>
+            :α event list -> α event
+    <tr><td> <span class="strong">atomic</span> <td> :α event -> α rbd
+    <tr><td>
+        <span class="strong">big_inter</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α event list -> α event
+    <tr><td>
+        <span class="strong">compl_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α event list -> α event list
+    <tr><td>
+        <span class="strong">compl_pspace</span>
+        <td>
+        :α event # α event event # (α event -> real) -> α event -> α event
+    <tr><td>
+        <span class="strong">list_prob</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α event list -> real list
+    <tr><td> <span class="strong">list_prod</span> <td> :real list -> real
+    <tr><td>
+        <span class="strong">list_prod_one_minus_rel</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α event list list -> real list
+    <tr><td>
+        <span class="strong">list_prod_rel</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         α event list list -> real list
+    <tr><td>
+        <span class="strong">mutual_indep</span>
+        <td>
+        :α event # α event event # (α event -> real) -> α event list event
+    <tr><td>
+        <span class="strong">of</span>
+        <td>
+        :(γ list -> β) -> (α -> γ) -> α list -> β
+    <tr><td>
+        <span class="strong">one_minus_list</span>
+        <td>
+        :real list -> real list
+    <tr><td> <span class="strong">parallel</span> <td> :α rbd list -> α rbd
+    <tr><td>
+        <span class="strong">rbd1_size</span>
+        <td>
+        :(α -> num) -> α rbd list -> num
+    <tr><td>
+        <span class="strong">rbd_CASE</span>
+        <td>
+        :α rbd ->
+         (α rbd list -> β) -> (α rbd list -> β) -> (α event -> β) -> β
+    <tr><td>
+        <span class="strong">rbd_list</span>
+        <td>
+        :α event list -> α rbd list
+    <tr><td>
+        <span class="strong">rbd_size</span>
+        <td>
+        :(α -> num) -> α rbd -> num
+    <tr><td>
+        <span class="strong">rbd_struct</span>
+        <td>
+        :α event # α event event # (α event -> real) -> α rbd -> α event
+    <tr><td>
+        <span class="strong">rbd_struct_tupled</span>
+        <td>
+        :(α event # α event event # (α event -> real)) # α rbd -> α event
+    <tr><td> <span class="strong">series</span> <td> :α rbd list -> α rbd
+
+</table>
+</center>
+
+<h1>Definitions</h1>
+<DL>
+<DT><span class="strong">UNIONL_def</span>
+<DD>
+<pre>
+|- (UNIONL [] = ∅) ∧ ∀s ss. UNIONL (s::ss) = s ∪ UNIONL ss
+</pre>
+
+<DT><span class="strong">rbd_TY_DEF</span>
+<DD>
+<pre>
+|- ∃rep.
+     TYPE_DEFINITION
+       (λa0'.
+          ∀'rbd' '@temp @ind_typeRBD0list' .
+            (∀a0'.
+               (∃a.
+                  (a0' =
+                   (λa.
+                      ind_type$CONSTR 0 ARB
+                        (ind_type$FCONS a (λn. ind_type$BOTTOM))) a) ∧
+                  '@temp @ind_typeRBD0list' a) ∨
+               (∃a.
+                  (a0' =
+                   (λa.
+                      ind_type$CONSTR (SUC 0) ARB
+                        (ind_type$FCONS a (λn. ind_type$BOTTOM))) a) ∧
+                  '@temp @ind_typeRBD0list' a) ∨
+               (∃a.
+                  a0' =
+                  (λa. ind_type$CONSTR (SUC (SUC 0)) a (λn. ind_type$BOTTOM))
+                    a) ⇒
+               'rbd' a0') ∧
+            (∀a1'.
+               (a1' =
+                ind_type$CONSTR (SUC (SUC (SUC 0))) ARB
+                  (λn. ind_type$BOTTOM)) ∨
+               (∃a0 a1.
+                  (a1' =
+                   (λa0 a1.
+                      ind_type$CONSTR (SUC (SUC (SUC (SUC 0)))) ARB
+                        (ind_type$FCONS a0
+                           (ind_type$FCONS a1 (λn. ind_type$BOTTOM)))) a0
+                     a1) ∧ 'rbd' a0 ∧ '@temp @ind_typeRBD0list' a1) ⇒
+               '@temp @ind_typeRBD0list' a1') ⇒
+            'rbd' a0') rep
+</pre>
+
+<DT><span class="strong">rbd_case_def</span>
+<DD>
+<pre>
+|- (∀a f f1 f2. rbd_CASE (series a) f f1 f2 = f a) ∧
+   (∀a f f1 f2. rbd_CASE (parallel a) f f1 f2 = f1 a) ∧
+   ∀a f f1 f2. rbd_CASE (atomic a) f f1 f2 = f2 a
+</pre>
+
+<DT><span class="strong">rbd_size_def</span>
+<DD>
+<pre>
+|- (∀f a. rbd_size f (series a) = 1 + rbd1_size f a) ∧
+   (∀f a. rbd_size f (parallel a) = 1 + rbd1_size f a) ∧
+   (∀f a. rbd_size f (atomic a) = 1) ∧ (∀f. rbd1_size f [] = 0) ∧
+   ∀f a0 a1. rbd1_size f (a0::a1) = 1 + (rbd_size f a0 + rbd1_size f a1)
+</pre>
+
+<DT><span class="strong">rbd_struct_tupled_primitive_def</span>
+<DD>
+<pre>
+|- rbd_struct_tupled =
+   WFREC
+     (@R.
+        WF R ∧ (∀x xs p. R (p,series xs) (p,series (x::xs))) ∧
+        (∀xs x p. R (p,x) (p,series (x::xs))) ∧
+        (∀xs x p. R (p,x) (p,parallel (x::xs))) ∧
+        ∀x xs p. R (p,parallel xs) (p,parallel (x::xs)))
+     (λrbd_struct_tupled a'.
+        case a' of
+          (p,series []) => I (p_space p)
+        | (p,series (x::xs)) =>
+            I (rbd_struct_tupled (p,x) ∩ rbd_struct_tupled (p,series xs))
+        | (p,parallel []) => I ∅
+        | (p,parallel (x'::xs')) =>
+            I (rbd_struct_tupled (p,x') ∪ rbd_struct_tupled (p,parallel xs'))
+        | (p,atomic a) => I a)
+</pre>
+
+<DT><span class="strong">rbd_struct_curried_def</span>
+<DD>
+<pre>
+|- ∀x x1. rbd_struct x x1 = rbd_struct_tupled (x,x1)
+</pre>
+
+<DT><span class="strong">rbd_list_def</span>
+<DD>
+<pre>
+|- (rbd_list [] = []) ∧ ∀h t. rbd_list (h::t) = atomic h::rbd_list t
+</pre>
+
+<DT><span class="strong">of_DEF</span>
+<DD>
+<pre>
+|- ∀g f. g of f = g o (λa. MAP f a)
+</pre>
+
+<DT><span class="strong">big_inter_def</span>
+<DD>
+<pre>
+|- (∀p. big_inter p [] = p_space p) ∧
+   ∀p h t. big_inter p (h::t) = h ∩ big_inter p t
+</pre>
+
+<DT><span class="strong">list_prod_def</span>
+<DD>
+<pre>
+|- (list_prod [] = 1) ∧ ∀h t. list_prod (h::t) = h * list_prod t
+</pre>
+
+<DT><span class="strong">list_prob_def</span>
+<DD>
+<pre>
+|- (∀p. list_prob p [] = []) ∧
+   ∀p h t. list_prob p (h::t) = prob p h::list_prob p t
+</pre>
+
+<DT><span class="strong">mutual_indep_def</span>
+<DD>
+<pre>
+|- ∀p L.
+     mutual_indep p L ⇔
+     ∀L1 n.
+       PERM L L1 ∧ 1 ≤ n ∧ n ≤ LENGTH L ⇒
+       (prob p (big_inter p (TAKE n L1)) =
+        list_prod (list_prob p (TAKE n L1)))
+</pre>
+
+<DT><span class="strong">compl_list_def</span>
+<DD>
+<pre>
+|- ∀p L. compl_list p L = MAP (λa. p_space p DIFF a) L
+</pre>
+
+<DT><span class="strong">one_minus_list_def</span>
+<DD>
+<pre>
+|- (one_minus_list [] = []) ∧
+   ∀h t. one_minus_list (h::t) = 1 − h::one_minus_list t
+</pre>
+
+<DT><span class="strong">compl_pspace_def</span>
+<DD>
+<pre>
+|- ∀p s. compl_pspace p s = p_space p DIFF s
+</pre>
+
+<DT><span class="strong">list_prod_one_minus_rel_def</span>
+<DD>
+<pre>
+|- ∀p L.
+     list_prod_one_minus_rel p L =
+     MAP (λa. list_prod (one_minus_list (list_prob p a))) L
+</pre>
+
+<DT><span class="strong">list_prod_rel_def</span>
+<DD>
+<pre>
+|- ∀p L. list_prod_rel p L = MAP (λa. list_prod (list_prob p a)) L
+</pre>
+
+</DL>
+
+
+<hr>
+
+<hr>
+<h1>Theorems</h1>
+<DL>
+<DT><span class="strong">IN_UNIONL</span>
+<DD>
+<pre>
+|- ∀l v. v ∈ UNIONL l ⇔ ∃s. MEM s l ∧ v ∈ s
+</pre>
+
+<DT><span class="strong">datatype_rbd</span>
+<DD>
+<pre>
+|- DATATYPE (rbd series parallel atomic)
+</pre>
+
+<DT><span class="strong">rbd_11</span>
+<DD>
+<pre>
+|- (∀a a'. (series a = series a') ⇔ (a = a')) ∧
+   (∀a a'. (parallel a = parallel a') ⇔ (a = a')) ∧
+   ∀a a'. (atomic a = atomic a') ⇔ (a = a')
+</pre>
+
+<DT><span class="strong">rbd_distinct</span>
+<DD>
+<pre>
+|- (∀a' a. series a ≠ parallel a') ∧ (∀a' a. series a ≠ atomic a') ∧
+   ∀a' a. parallel a ≠ atomic a'
+</pre>
+
+<DT><span class="strong">rbd_case_cong</span>
+<DD>
+<pre>
+|- ∀M M' f f1 f2.
+     (M = M') ∧ (∀a. (M' = series a) ⇒ (f a = f' a)) ∧
+     (∀a. (M' = parallel a) ⇒ (f1 a = f1' a)) ∧
+     (∀a. (M' = atomic a) ⇒ (f2 a = f2' a)) ⇒
+     (rbd_CASE M f f1 f2 = rbd_CASE M' f' f1' f2')
+</pre>
+
+<DT><span class="strong">rbd_nchotomy</span>
+<DD>
+<pre>
+|- ∀rr. (∃l. rr = series l) ∨ (∃l. rr = parallel l) ∨ ∃f. rr = atomic f
+</pre>
+
+<DT><span class="strong">rbd_Axiom</span>
+<DD>
+<pre>
+|- ∀f0 f1 f2 f3 f4.
+     ∃fn0 fn1.
+       (∀a. fn0 (series a) = f0 a (fn1 a)) ∧
+       (∀a. fn0 (parallel a) = f1 a (fn1 a)) ∧ (∀a. fn0 (atomic a) = f2 a) ∧
+       (fn1 [] = f3) ∧ ∀a0 a1. fn1 (a0::a1) = f4 a0 a1 (fn0 a0) (fn1 a1)
+</pre>
+
+<DT><span class="strong">rbd_induction</span>
+<DD>
+<pre>
+|- ∀P0 P1.
+     (∀l. P1 l ⇒ P0 (series l)) ∧ (∀l. P1 l ⇒ P0 (parallel l)) ∧
+     (∀f. P0 (atomic f)) ∧ P1 [] ∧ (∀r l. P0 r ∧ P1 l ⇒ P1 (r::l)) ⇒
+     (∀r. P0 r) ∧ ∀l. P1 l
+</pre>
+
+<DT><span class="strong">rbd_struct_ind</span>
+<DD>
+<pre>
+|- ∀P.
+     (∀p a. P p (atomic a)) ∧ (∀p. P p (series [])) ∧
+     (∀p x xs. P p x ∧ P p (series xs) ⇒ P p (series (x::xs))) ∧
+     (∀p. P p (parallel [])) ∧
+     (∀p x xs. P p x ∧ P p (parallel xs) ⇒ P p (parallel (x::xs))) ⇒
+     ∀v v1. P v v1
+</pre>
+
+<DT><span class="strong">rbd_struct_def</span>
+<DD>
+<pre>
+|- (∀p a. rbd_struct p (atomic a) = a) ∧
+   (∀p. rbd_struct p (series []) = p_space p) ∧
+   (∀xs x p.
+      rbd_struct p (series (x::xs)) =
+      rbd_struct p x ∩ rbd_struct p (series xs)) ∧
+   (∀p. rbd_struct p (parallel []) = ∅) ∧
+   ∀xs x p.
+     rbd_struct p (parallel (x::xs)) =
+     rbd_struct p x ∪ rbd_struct p (parallel xs)
+</pre>
+
+<DT><span class="strong">mutual_indep_cons</span>
+<DD>
+<pre>
+|- ∀L h. mutual_indep p (h::L) ⇒ mutual_indep p L
+</pre>
+
+<DT><span class="strong">series_rbd_eq_big_inter</span>
+<DD>
+<pre>
+|- ∀p L. rbd_struct p (series (rbd_list L)) = big_inter p L
+</pre>
+
+<DT><span class="strong">series_struct_thm</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ ¬NULL L ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ∧
+     mutual_indep p L ⇒
+     (prob p (rbd_struct p (series (rbd_list L))) = list_prod (list_prob p L))
+</pre>
+
+<DT><span class="strong">parallel_rbd_lem1</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ⇒
+     (one_minus_list (list_prob p L) = list_prob p (compl_list p L))
+</pre>
+
+<DT><span class="strong">in_events_big_inter</span>
+<DD>
+<pre>
+|- ∀L p.
+     (∀x. MEM x L ⇒ x ∈ events p) ∧ prob_space p ⇒ big_inter p L ∈ events p
+</pre>
+
+<DT><span class="strong">parallel_rbd_lem2</span>
+<DD>
+<pre>
+|- ∀L1 L2 Q. LENGTH (L1 ++ Q::L2) = LENGTH (Q::L1 ++ L2)
+</pre>
+
+<DT><span class="strong">parallel_rbd_lem3</span>
+<DD>
+<pre>
+|- ∀A B C D. A ∩ B ∩ C ∩ D = B ∩ C ∩ D ∩ A
+</pre>
+
+<DT><span class="strong">parallel_rbd_lem4</span>
+<DD>
+<pre>
+|- ∀A C. A ∩ (p_space p DIFF C) = A ∩ p_space p DIFF A ∩ C
+</pre>
+
+<DT><span class="strong">parallel_rbd_lem5</span>
+<DD>
+<pre>
+|- ∀m L x. MEM x (TAKE m L) ⇒ MEM x L
+</pre>
+
+<DT><span class="strong">parallel_rbd_lem6</span>
+<DD>
+<pre>
+|- ∀A C. A ∩ (p_space p DIFF C) = A ∩ p_space p DIFF A ∩ C
+</pre>
+
+<DT><span class="strong">parallel_rbd_lem7</span>
+<DD>
+<pre>
+|- ∀L1 p.
+     prob_space p ∧ (∀x. MEM x L1 ⇒ x ∈ events p) ⇒
+     (L1 = compl_list p (compl_list p L1))
+</pre>
+
+<DT><span class="strong">prob_B</span>
+<DD>
+<pre>
+|- ∀p a b.
+     prob_space p ∧ a ∈ events p ∧ b ∈ events p ⇒
+     (prob p b = prob p (a ∩ b) + prob p (compl_pspace p a ∩ b))
+</pre>
+
+<DT><span class="strong">Prob_Incl_excl</span>
+<DD>
+<pre>
+|- ∀p a b.
+     prob_space p ∧ a ∈ events p ∧ b ∈ events p ⇒
+     (prob p (a ∪ b) = prob p a + prob p b − prob p (a ∩ b))
+</pre>
+
+<DT><span class="strong">prob_compl_subset</span>
+<DD>
+<pre>
+|- ∀p s t.
+     prob_space p ∧ s ∈ events p ∧ t ∈ events p ∧ t ⊆ s ⇒
+     (prob p (s DIFF t) = prob p s − prob p t)
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append</span>
+<DD>
+<pre>
+|- ∀L1 L2 h. mutual_indep p (h::L1 ++ L2) ⇒ mutual_indep p (L1 ++ h::L2)
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append1</span>
+<DD>
+<pre>
+|- ∀L1 L2 Q h.
+     mutual_indep p (h::L1 ++ Q::L2) ⇒ mutual_indep p (L1 ++ Q::h::L2)
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_swap</span>
+<DD>
+<pre>
+|- ∀p L1 h. mutual_indep p (h::L1) ⇒ mutual_indep p (L1 ++ [h])
+</pre>
+
+<DT><span class="strong">prob_indep_compl_event_big_inter_list</span>
+<DD>
+<pre>
+|- ∀L1 n h p.
+     mutual_indep p (h::L1) ∧ (∀x. MEM x (h::L1) ⇒ x ∈ events p) ∧
+     prob_space p ∧ (LENGTH L1 = 1) ⇒
+     (prob p ((p_space p DIFF h) ∩ big_inter p (TAKE n (compl_list p L1))) =
+      prob p (p_space p DIFF h) *
+      list_prod (list_prob p (TAKE n (compl_list p L1))))
+</pre>
+
+<DT><span class="strong">prob_indep_big_inter1</span>
+<DD>
+<pre>
+|- ∀L1 L2 Q n p.
+     prob_space p ∧ mutual_indep p (L1 ++ Q::L2) ∧
+     (∀x. MEM x (L1 ++ Q::L2) ⇒ x ∈ events p) ∧ 1 ≤ LENGTH (L1 ++ Q::L2) ⇒
+     (prob p (big_inter p (TAKE n (compl_list p L1)) ∩ big_inter p (Q::L2)) =
+      list_prod (list_prob p (TAKE n (compl_list p L1))) *
+      list_prod (list_prob p (Q::L2)))
+</pre>
+
+<DT><span class="strong">prob_big_inter_compl_list</span>
+<DD>
+<pre>
+|- ∀L1 n p.
+     prob_space p ∧ mutual_indep p L1 ∧ (∀x. MEM x L1 ⇒ x ∈ events p) ∧
+     1 ≤ LENGTH L1 ⇒
+     (prob p (big_inter p (TAKE n (compl_list p L1))) =
+      list_prod (list_prob p (TAKE n (compl_list p L1))))
+</pre>
+
+<DT><span class="strong">mutual_indep_compl_event_imp_norm_event</span>
+<DD>
+<pre>
+|- ∀L1 p.
+     prob_space p ∧ mutual_indep p (compl_list p L1) ∧
+     (∀x. MEM x L1 ⇒ x ∈ events p) ∧ 1 ≤ LENGTH L1 ⇒
+     mutual_indep p L1
+</pre>
+
+<DT><span class="strong">mutual_indep_compl</span>
+<DD>
+<pre>
+|- ∀L1 p.
+     prob_space p ∧ mutual_indep p L1 ∧ (∀x. MEM x L1 ⇒ x ∈ events p) ∧
+     1 ≤ LENGTH L1 ⇒
+     mutual_indep p (compl_list p L1)
+</pre>
+
+<DT><span class="strong">parallel_lem1</span>
+<DD>
+<pre>
+|- ∀p s t. p_space p DIFF (s ∪ t) = (p_space p DIFF s) ∩ (p_space p DIFF t)
+</pre>
+
+<DT><span class="strong">parallel_lem2</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x. MEM x L ⇒ x ∈ events p) ⇒
+     (rbd_struct p (series (rbd_list (compl_list p L))) =
+      p_space p DIFF rbd_struct p (parallel (rbd_list L)))
+</pre>
+
+<DT><span class="strong">parallel_lem3</span>
+<DD>
+<pre>
+|- ∀L p.
+     (∀x. MEM x L ⇒ x ∈ events p) ∧ prob_space p ⇒
+     rbd_struct p (parallel (rbd_list L)) ∈ events p
+</pre>
+
+<DT><span class="strong">parallel_lem4</span>
+<DD>
+<pre>
+|- ∀p L.
+     (∀x. MEM x L ⇒ x ∈ events p) ∧ prob_space p ∧
+     rbd_struct p (parallel (rbd_list L)) ∈ events p ⇒
+     rbd_struct p (parallel (rbd_list L)) ⊆ p_space p
+</pre>
+
+<DT><span class="strong">parallel_lem5</span>
+<DD>
+<pre>
+|- ∀p L. rbd_struct p (series (rbd_list L)) = big_inter p L
+</pre>
+
+<DT><span class="strong">parallel_lem6</span>
+<DD>
+<pre>
+|- ∀p x L.
+     prob_space p ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ⇒
+     (prob p (rbd_struct p (parallel (rbd_list L))) =
+      1 − prob p (rbd_struct p (series (rbd_list (compl_list p L)))))
+</pre>
+
+<DT><span class="strong">parallel_lem7</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ⇒
+     (one_minus_list (list_prob p L) = list_prob p (compl_list p L))
+</pre>
+
+<DT><span class="strong">parallel_lem8</span>
+<DD>
+<pre>
+|- ∀L. one_minus_list L = MAP (λa. 1 − a) L
+</pre>
+
+<DT><span class="strong">parallel_struct_thm</span>
+<DD>
+<pre>
+|- ∀p L.
+     ¬NULL L ∧ (∀x'. MEM x' L ⇒ x' ∈ events p) ∧ prob_space p ∧
+     mutual_indep p L ⇒
+     (prob p (rbd_struct p (parallel (rbd_list L))) =
+      1 − list_prod (one_minus_list (list_prob p L)))
+</pre>
+
+<DT><span class="strong">parallel_series_lem1</span>
+<DD>
+<pre>
+|- ∀l1 l2 l3 l4.
+     (PERM l1 = PERM (l2 ++ l3)) ⇒ (PERM (l1 ++ l4) = PERM (l2 ++ (l4 ++ l3)))
+</pre>
+
+<DT><span class="strong">mutual_indep_flat_cons1</span>
+<DD>
+<pre>
+|- ∀L1 h L p.
+     mutual_indep p (FLAT ((h::L1)::L)) ⇒ mutual_indep p (FLAT (L1::[h]::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_flat_cons2</span>
+<DD>
+<pre>
+|- ∀L1 h L p. mutual_indep p (FLAT (L1::h::L)) ⇒ mutual_indep p (FLAT (h::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_flat_append</span>
+<DD>
+<pre>
+|- ∀L L1 L2 p. mutual_indep p (FLAT (L1::L2::L)) ⇒ mutual_indep p (L1 ++ L2)
+</pre>
+
+<DT><span class="strong">mutual_indep_flat_cons3</span>
+<DD>
+<pre>
+|- ∀L1 h L p. mutual_indep p (FLAT (L1::h::L)) ⇒ mutual_indep p (FLAT (L1::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_flat_append1</span>
+<DD>
+<pre>
+|- ∀L h L1 p.
+     mutual_indep p (FLAT (L1::h::L)) ⇒ mutual_indep p (FLAT ((h ++ L1)::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_front_append</span>
+<DD>
+<pre>
+|- ∀L1 L p. mutual_indep p (L1 ++ L) ⇒ mutual_indep p L
+</pre>
+
+<DT><span class="strong">mutual_indep_FLAT_front_cons</span>
+<DD>
+<pre>
+|- ∀h L p. mutual_indep p (FLAT (h::L)) ⇒ mutual_indep p (FLAT L)
+</pre>
+
+<DT><span class="strong">mutual_indep_append1</span>
+<DD>
+<pre>
+|- ∀L1 L2 L p. mutual_indep p (L1 ++ L2 ++ L) ⇒ mutual_indep p (L2 ++ L1 ++ L)
+</pre>
+
+<DT><span class="strong">mutual_indep_flat_cons4</span>
+<DD>
+<pre>
+|- ∀L1 h L p. mutual_indep p (FLAT (L1::h::L)) ⇒ mutual_indep p (FLAT (L1::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_append_sym</span>
+<DD>
+<pre>
+|- ∀L1 L p. mutual_indep p (L1 ++ L) ⇒ mutual_indep p (L ++ L1)
+</pre>
+
+<DT><span class="strong">mutual_indep_flat_cons5</span>
+<DD>
+<pre>
+|- ∀L L1 L2 p. mutual_indep p (FLAT (L1::L2::L)) ⇒ mutual_indep p L1
+</pre>
+
+<DT><span class="strong">mutual_indep_FLAT_append1</span>
+<DD>
+<pre>
+|- ∀L L1 L2 p. mutual_indep p (FLAT (L1::L2::L)) ⇒ mutual_indep p (L1 ++ L2)
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append10</span>
+<DD>
+<pre>
+|- ∀L1 h L p. mutual_indep p (FLAT (L1::h::L)) ⇒ mutual_indep p (FLAT (h::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append11</span>
+<DD>
+<pre>
+|- ∀h L1 L2 L p.
+     mutual_indep p (L1 ++ h::(L2 ++ L)) ⇒ mutual_indep p (h::(L1 ++ L))
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append12</span>
+<DD>
+<pre>
+|- ∀h L1 L2 L p.
+     mutual_indep p (FLAT (L1::(h::L2)::L)) ⇒
+     mutual_indep p (FLAT ((h::L1)::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append13</span>
+<DD>
+<pre>
+|- ∀L L1 L2 p. mutual_indep p (FLAT (L1::L2::L)) ⇒ mutual_indep p (L1 ++ L2)
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append14</span>
+<DD>
+<pre>
+|- ∀h L1 L p. mutual_indep p (L1 ++ h::L) ⇒ mutual_indep p (L1 ++ L)
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append15</span>
+<DD>
+<pre>
+|- ∀h L1 L2 L p.
+     mutual_indep p (FLAT (L1::(h::L2)::L)) ⇒ mutual_indep p (FLAT ([h]::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append16</span>
+<DD>
+<pre>
+|- ∀h L1 L2 L p.
+     mutual_indep p (FLAT (L1::(h::L2)::L)) ⇒
+     mutual_indep p (FLAT ([h]::L2::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append17</span>
+<DD>
+<pre>
+|- ∀h L1 L p.
+     mutual_indep p (FLAT ((h::L1)::L)) ⇒ mutual_indep p (FLAT ([h]::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append18</span>
+<DD>
+<pre>
+|- ∀h L1 L p.
+     mutual_indep p (FLAT ((h::L1)::L)) ⇒ mutual_indep p (FLAT (L1::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_cons_append19</span>
+<DD>
+<pre>
+|- ∀h L1 L p.
+     mutual_indep p (FLAT ((h::L1)::L)) ⇒ mutual_indep p (FLAT (L1::[h]::L))
+</pre>
+
+<DT><span class="strong">mutual_indep_flat_cons6</span>
+<DD>
+<pre>
+|- ∀h L1 L p.
+     mutual_indep p (FLAT ((h::L1)::L)) ⇒ mutual_indep p (FLAT [L1; [h]])
+</pre>
+
+<DT><span class="strong">in_events_parallel_series</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x. MEM x (FLAT L) ⇒ x ∈ events p) ⇒
+     rbd_struct p (parallel (MAP (λa. series (rbd_list a)) L)) ∈ events p
+</pre>
+
+<DT><span class="strong">series_rbd_append</span>
+<DD>
+<pre>
+|- ∀p h L1.
+     prob_space p ∧ (∀x. MEM x (h ++ L1) ⇒ x ∈ events p) ⇒
+     (rbd_struct p (series (rbd_list h)) ∩
+      rbd_struct p (series (rbd_list L1)) =
+      rbd_struct p (series (rbd_list (h ++ L1))))
+</pre>
+
+<DT><span class="strong">inter_set_arrang1</span>
+<DD>
+<pre>
+|- ∀a b c d. a ∩ b ∩ c ∩ d = a ∩ (b ∩ c) ∩ d
+</pre>
+
+<DT><span class="strong">MEM_NULL_arrang1</span>
+<DD>
+<pre>
+|- ∀L1 L2 L.
+     (∀x. MEM x (L1::L2::L) ⇒ ¬NULL x) ⇒ ∀x. MEM x ((L1 ++ L2)::L) ⇒ ¬NULL x
+</pre>
+
+<DT><span class="strong">series_rbd_append2</span>
+<DD>
+<pre>
+|- ∀p h L1.
+     prob_space p ∧ (∀x. MEM x (h ++ L1) ⇒ x ∈ events p) ∧ ¬NULL h ∧
+     ¬NULL L1 ∧ mutual_indep p (h ++ L1) ⇒
+     (prob p (rbd_struct p (series (rbd_list (h ++ L1)))) =
+      prob p (rbd_struct p (series (rbd_list h))) *
+      prob p (rbd_struct p (series (rbd_list L1))))
+</pre>
+
+<DT><span class="strong">series_rbd_indep_parallel_series_rbd</span>
+<DD>
+<pre>
+|- ∀p L L1.
+     prob_space p ∧ (∀x. MEM x (L1::L) ⇒ ¬NULL x) ∧
+     (∀x. MEM x (FLAT (L1::L)) ⇒ x ∈ events p) ∧
+     mutual_indep p (FLAT (L1::L)) ⇒
+     (prob p
+        (rbd_struct p (series (rbd_list L1)) ∩
+         rbd_struct p (parallel (MAP (λa. series (rbd_list a)) L))) =
+      prob p (rbd_struct p (series (rbd_list L1))) *
+      prob p (rbd_struct p (parallel (MAP (λa. series (rbd_list a)) L))))
+</pre>
+
+<DT><span class="strong">Parallel_Series_struct_thm</span>
+<DD>
+<pre>
+|- ∀p L.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT L) ⇒ x' ∈ events p) ∧ mutual_indep p (FLAT L) ⇒
+     (prob p (rbd_struct p (parallel (MAP (λa. series (rbd_list a)) L))) =
+      1 − list_prod (one_minus_list (list_prod_rel p L)))
+</pre>
+
+<DT><span class="strong">rel_parallel_series_rbd</span>
+<DD>
+<pre>
+|- ∀p L.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT L) ⇒ x' ∈ events p) ∧ mutual_indep p (FLAT L) ⇒
+     (prob p (rbd_struct p ((parallel of (λa. series (rbd_list a))) L)) =
+      1 − list_prod (one_minus_list (list_prod_rel p L)))
+</pre>
+
+<DT><span class="strong">one_minus_eq_lemm</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ⇒
+     (list_prod
+        (one_minus_list
+           (MAP (λa. list_prod (one_minus_list (list_prob p a))) L)) =
+      list_prod (MAP (λa. 1 − list_prod (one_minus_list (list_prob p a))) L))
+</pre>
+
+<DT><span class="strong">parallel_series_struct_rbd_v2</span>
+<DD>
+<pre>
+|- ∀p L.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT L) ⇒ x' ∈ events p) ∧ mutual_indep p (FLAT L) ⇒
+     (prob p (rbd_struct p ((parallel of (λa. series (rbd_list a))) L)) =
+      1 − (list_prod o one_minus_list of (λa. list_prod (list_prob p a))) L)
+</pre>
+
+<DT><span class="strong">in_events_series_parallel</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x. MEM x (FLAT L) ⇒ x ∈ events p) ⇒
+     rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L)) ∈ events p
+</pre>
+
+<DT><span class="strong">series_rbd_indep_series_parallel_rbd</span>
+<DD>
+<pre>
+|- ∀p L L1.
+     prob_space p ∧ (∀x. MEM x (L1::L) ⇒ ¬NULL x) ∧
+     (∀x. MEM x (FLAT (L1::L)) ⇒ x ∈ events p) ∧
+     mutual_indep p (FLAT (L1::L)) ⇒
+     (prob p
+        (rbd_struct p (series (rbd_list L1)) ∩
+         rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L))) =
+      prob p (rbd_struct p (series (rbd_list L1))) *
+      prob p (rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L))))
+</pre>
+
+<DT><span class="strong">parallel_rbd_indep_series_parallel_rbd</span>
+<DD>
+<pre>
+|- ∀p L1 L.
+     prob_space p ∧ (∀x. MEM x (L1::L) ⇒ ¬NULL x) ∧
+     (∀x. MEM x (FLAT (L1::L)) ⇒ x ∈ events p) ∧
+     mutual_indep p (FLAT (L1::L)) ⇒
+     (prob p
+        (rbd_struct p (parallel (rbd_list L1)) ∩
+         rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L))) =
+      prob p (rbd_struct p (parallel (rbd_list L1))) *
+      prob p (rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L))))
+</pre>
+
+<DT><span class="strong">series_parallel_struct_thm</span>
+<DD>
+<pre>
+|- ∀p L.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT L) ⇒ x' ∈ events p) ∧ mutual_indep p (FLAT L) ⇒
+     (prob p (rbd_struct p ((series of (λa. parallel (rbd_list a))) L)) =
+      list_prod (one_minus_list (list_prod_one_minus_rel p L)))
+</pre>
+
+<DT><span class="strong">series_parallel_struct_thm_v2</span>
+<DD>
+<pre>
+|- ∀p L.
+     (∀z. MEM z L ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT L) ⇒ x' ∈ events p) ∧ mutual_indep p (FLAT L) ⇒
+     (prob p (rbd_struct p ((series of (λa. parallel (rbd_list a))) L)) =
+      (list_prod of (λa. 1 − list_prod (one_minus_list (list_prob p a)))) L)
+</pre>
+
+<DT><span class="strong">in_events_parallel_of_series_parallel</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x'. MEM x' (FLAT (FLAT L)) ⇒ x' ∈ events p) ⇒
+     rbd_struct p
+       (parallel (MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a)) L)) ∈
+     events p
+</pre>
+
+<DT><span class="strong">in_events_series_parallel_of_series_parallel</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀x'. MEM x' (FLAT (FLAT (FLAT L))) ⇒ x' ∈ events p) ⇒
+     rbd_struct p
+       (series
+          (MAP
+             (parallel o
+              (λa. MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a)) a))
+             L)) ∈ events p
+</pre>
+
+<DT><span class="strong">series_rbd_indep_series_parallel_inter_series_parallel_of_series_parallel</span>
+<DD>
+<pre>
+|- ∀p h' L1 L.
+     prob_space p ∧
+     (∀z. MEM z (FLAT (FLAT ([[[L1]]] ++ [h']::L))) ⇒ ¬NULL z) ∧
+     (∀x'.
+        MEM x' (FLAT (FLAT (FLAT ([[[L1]]] ++ [h']::L)))) ⇒ x' ∈ events p) ∧
+     mutual_indep p (L1 ++ FLAT (FLAT (FLAT ([h']::L)))) ∧
+     (∀L1.
+        prob_space p ∧ (∀z. MEM z (FLAT (FLAT ([[[L1]]] ++ L))) ⇒ ¬NULL z) ∧
+        (∀x'. MEM x' (FLAT (FLAT (FLAT ([[[L1]]] ++ L)))) ⇒ x' ∈ events p) ∧
+        mutual_indep p (L1 ++ FLAT (FLAT (FLAT L))) ⇒
+        (prob p
+           (rbd_struct p (series (rbd_list L1)) ∩
+            rbd_struct p
+              (series
+                 (MAP
+                    (parallel o
+                     (λa.
+                        MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                          a)) L))) =
+         prob p (rbd_struct p (series (rbd_list L1))) *
+         prob p
+           (rbd_struct p
+              (series
+                 (MAP
+                    (parallel o
+                     (λa.
+                        MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                          a)) L))))) ⇒
+     (prob p
+        (rbd_struct p (series (rbd_list L1)) ∩
+         rbd_struct p (series (MAP (λa. parallel (rbd_list a)) h')) ∩
+         rbd_struct p
+           (series
+              (MAP
+                 (parallel o
+                  (λa.
+                     MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                       a)) L))) =
+      prob p (rbd_struct p (series (rbd_list L1))) *
+      prob p
+        (rbd_struct p (series (MAP (λa. parallel (rbd_list a)) h')) ∩
+         rbd_struct p
+           (series
+              (MAP
+                 (parallel o
+                  (λa.
+                     MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                       a)) L))))
+</pre>
+
+<DT><span class="strong">series_rbd_indep_series_parallel_of_series_parallel</span>
+<DD>
+<pre>
+|- ∀p L L1.
+     prob_space p ∧ (∀z. MEM z (FLAT (FLAT ([[[L1]]] ++ L))) ⇒ ¬NULL z) ∧
+     (∀x'. MEM x' (FLAT (FLAT (FLAT ([[[L1]]] ++ L)))) ⇒ x' ∈ events p) ∧
+     mutual_indep p (L1 ++ FLAT (FLAT (FLAT L))) ⇒
+     (prob p
+        (rbd_struct p (series (rbd_list L1)) ∩
+         rbd_struct p
+           (series
+              (MAP
+                 (parallel o
+                  (λa.
+                     MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                       a)) L))) =
+      prob p (rbd_struct p (series (rbd_list L1))) *
+      prob p
+        (rbd_struct p
+           (series
+              (MAP
+                 (parallel o
+                  (λa.
+                     MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                       a)) L))))
+</pre>
+
+<DT><span class="strong">series_parallel_rbd_indep_series_parallel_of_series_parallel</span>
+<DD>
+<pre>
+|- ∀p L1 L.
+     prob_space p ∧ (∀z. MEM z (FLAT (FLAT ([L1]::L))) ⇒ ¬NULL z) ∧
+     (∀x'. MEM x' (FLAT (FLAT (FLAT ([L1]::L)))) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (FLAT (FLAT ([L1]::L)))) ⇒
+     (prob p
+        (rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L1)) ∩
+         rbd_struct p
+           (series
+              (MAP
+                 (parallel o
+                  (λa.
+                     MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                       a)) L))) =
+      prob p (rbd_struct p (series (MAP (λa. parallel (rbd_list a)) L1))) *
+      prob p
+        (rbd_struct p
+           (series
+              (MAP
+                 (parallel o
+                  (λa.
+                     MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                       a)) L))))
+</pre>
+
+<DT><span class="strong">parallel_series_parallel_rbd_indep_series_parallel_of_series_parallel_rbd</span>
+<DD>
+<pre>
+|- ∀p L1 L.
+     prob_space p ∧ (∀z. MEM z (FLAT (FLAT (L1::L))) ⇒ ¬NULL z) ∧
+     (∀x'. MEM x' (FLAT (FLAT (FLAT (L1::L)))) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (FLAT (FLAT (L1::L)))) ⇒
+     (prob p
+        (rbd_struct p
+           (parallel
+              (MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a)) L1)) ∩
+         rbd_struct p
+           (series
+              (MAP
+                 (parallel o
+                  (λa.
+                     MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                       a)) L))) =
+      prob p
+        (rbd_struct p
+           (parallel
+              (MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a)) L1))) *
+      prob p
+        (rbd_struct p
+           (series
+              (MAP
+                 (parallel o
+                  (λa.
+                     MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a))
+                       a)) L))))
+</pre>
+
+<DT><span class="strong">rel_parallel_of_series_parallel_rbd</span>
+<DD>
+<pre>
+|- ∀p L1 L.
+     (∀z. MEM z (FLAT (FLAT (L1::L))) ⇒ ¬NULL z) ∧ prob_space p ∧
+     (∀x'. MEM x' (FLAT (FLAT (FLAT (L1::L)))) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (FLAT (FLAT (L1::L)))) ⇒
+     (prob p
+        (rbd_struct p
+           (parallel
+              (MAP (series o (λa. MAP (λa. parallel (rbd_list a)) a)) L1))) =
+      1 −
+      list_prod
+        (one_minus_list
+           (MAP
+              ((λa. list_prod a) o
+               (λa.
+                  MAP (λa. 1 − list_prod (one_minus_list (list_prob p a))) a))
+              L1)))
+</pre>
+
+<DT><span class="strong">rel_nested_series_parallel_rbd</span>
+<DD>
+<pre>
+|- ∀p L.
+     prob_space p ∧ (∀z. MEM z (FLAT (FLAT L)) ⇒ ¬NULL z) ∧
+     (∀x'. MEM x' (FLAT (FLAT (FLAT L))) ⇒ x' ∈ events p) ∧
+     mutual_indep p (FLAT (FLAT (FLAT L))) ⇒
+     (prob p
+        (rbd_struct p
+           ((series of parallel of series of (λa. parallel (rbd_list a)))
+              L)) =
+      (list_prod of (λa. 1 − list_prod (one_minus_list a)) of
+       (λa. list_prod a) of
+       (λa. 1 − list_prod (one_minus_list (list_prob p a)))) L)
+</pre>
+
+</DL>
+
+
+
+<hr>
+</body>
+</html>

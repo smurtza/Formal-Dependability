@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head><title>Theory: railway</title><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<style type="text/css">
+<!--
+  body {background: #faf0e6; color: #191970; }
+  span.freevar  { color: blue}
+  span.boundvar { color: green}
+  span.typevar  { color: purple}
+  span.type     { color: teal}
+  span.strong   { color: black; font-weight: bold}
+  span.vstrong  { color: black; 
+                  font-weight: bold;
+                  font-size: larger}
+  h1 {color: black}
+  th {color: crimson}
+-->
+</style>
+</head>
+<body>
+<h1>Theory "railway"</h1>
+<span class="vstrong">Parents</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href = "smart_gridTheory.html"><span class="strong">smart_grid</span></a>
+
+<h1>Signature</h1>
+<center>
+<table BORDER=4 CELLPADDING=10 CELLSPACING=1>
+
+    <tr>
+    <th>
+    Constant
+    <th>
+    Type<tr><td>
+            <span class="strong">UNIONL</span>
+            <td>
+            :α event list -> α event
+    <tr><td>
+        <span class="strong">in_events</span>
+        <td>
+        :α event # α event event # (α event -> real) -> α event list event
+    <tr><td>
+        <span class="strong">one_minus_exp_func_list</span>
+        <td>
+        :real list -> real -> real list
+    <tr><td>
+        <span class="strong">three_dim_fail_event_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list list -> real -> α event list list list
+    <tr><td>
+        <span class="strong">two_dim_fail_event_list</span>
+        <td>
+        :α event # α event event # (α event -> real) ->
+         (α -> extreal) list list -> real -> α event list list
+
+</table>
+</center>
+
+<h1>Definitions</h1>
+<DL>
+<DT><span class="strong">UNIONL_def</span>
+<DD>
+<pre>
+|- (UNIONL [] = ∅) ∧ ∀s ss. UNIONL (s::ss) = s ∪ UNIONL ss
+</pre>
+
+<DT><span class="strong">in_events_def</span>
+<DD>
+<pre>
+|- ∀p L. in_events p L ⇔ ∀z. MEM z L ⇒ z ∈ events p
+</pre>
+
+<DT><span class="strong">two_dim_fail_event_list_def</span>
+<DD>
+<pre>
+|- ∀p L t. two_dim_fail_event_list p L t = MAP (λa. fail_event_list p a t) L
+</pre>
+
+<DT><span class="strong">three_dim_fail_event_list_def</span>
+<DD>
+<pre>
+|- ∀p L t.
+     three_dim_fail_event_list p L t =
+     MAP (λa. two_dim_fail_event_list p a t) L
+</pre>
+
+<DT><span class="strong">one_minus_exp_func_list_def</span>
+<DD>
+<pre>
+|- ∀C t. one_minus_exp_func_list C t = MAP (λa. 1 − exp (-(a * t))) C
+</pre>
+
+</DL>
+
+
+<hr>
+
+<hr>
+<h1>Theorems</h1>
+<DL>
+<DT><span class="strong">IN_UNIONL</span>
+<DD>
+<pre>
+|- ∀l v. v ∈ UNIONL l ⇔ ∃s. MEM s l ∧ v ∈ s
+</pre>
+
+<DT><span class="strong">railway_FT_equi_RBD</span>
+<DD>
+<pre>
+|- prob_space p ∧
+   in_events p
+     (fail_event_list p
+        [x1; x2; x3; x4; x4; x5; x6; x7; x8; x9; x10; x11; x12; x13; x14; x15;
+         x16] t) ⇒
+   (FTree p
+      (OR
+         [OR (gate_list (fail_event_list p [x3; x4] t));
+          OR (gate_list (fail_event_list p [x5; x6] t));
+          AND
+            [OR (gate_list (fail_event_list p [x9; x10] t));
+             OR (gate_list (fail_event_list p [x13; x14] t));
+             OR (gate_list (fail_event_list p [x15; x16] t));
+             OR (gate_list (fail_event_list p [x11; x12] t))];
+          OR (gate_list (fail_event_list p [x7; x8] t));
+          OR (gate_list (fail_event_list p [x1; x2] t))]) =
+    rbd_struct p
+      ((parallel of series of (λa. parallel (rbd_list a)))
+         (three_dim_fail_event_list p
+            [[[x3; x4; x5; x6; x7; x8; x1; x2]];
+             [[x9; x10]; [x13; x14]; [x15; x16]; [x11; x12]]] t)))
+</pre>
+
+<DT><span class="strong">fail_prob_railway_FT</span>
+<DD>
+<pre>
+|- 0 ≤ t ∧ prob_space p ∧
+   mutual_indep p
+     (FLAT
+        (FLAT
+           (FLAT
+              [three_dim_fail_event_list p
+                 [[[x3; x4; x5; x6; x7; x8; x1; x2]];
+                  [[x9; x10]; [x13; x14]; [x15; x16]; [x11; x12]]] t]))) ∧
+   (∀x'.
+      MEM x'
+        (FLAT
+           (FLAT
+              (FLAT
+                 [three_dim_fail_event_list p
+                    [[[x3; x4; x5; x6; x7; x8; x1; x2]];
+                     [[x9; x10]; [x13; x14]; [x15; x16]; [x11; x12]]] t]))) ⇒
+      x' ∈ events p) ∧
+   exp_dist_list p
+     [x1; x2; x3; x4; x4; x5; x6; x7; x8; x9; x10; x11; x12; x13; x14; x15;
+      x16]
+     [c1; c2; c3; c4; c4; c5; c6; c7; c8; c9; c10; c11; c12; c13; c14; c15;
+      c16] ⇒
+   (prob p
+      (FTree p
+         (OR
+            [OR (gate_list (fail_event_list p [x3; x4] t));
+             OR (gate_list (fail_event_list p [x5; x6] t));
+             AND
+               [OR (gate_list (fail_event_list p [x9; x10] t));
+                OR (gate_list (fail_event_list p [x13; x14] t));
+                OR (gate_list (fail_event_list p [x15; x16] t));
+                OR (gate_list (fail_event_list p [x11; x12] t))];
+             OR (gate_list (fail_event_list p [x7; x8] t));
+             OR (gate_list (fail_event_list p [x1; x2] t))])) =
+    1 −
+    exp (-(c3 * t)) * exp (-(c4 * t)) * exp (-(c5 * t)) * exp (-(c6 * t)) *
+    exp (-(c7 * t)) * exp (-(c8 * t)) * exp (-(c1 * t)) * exp (-(c2 * t)) *
+    (1 −
+     (1 − exp (-(c9 * t)) * exp (-(c10 * t))) *
+     (1 − exp (-(c13 * t)) * exp (-(c14 * t))) *
+     (1 − exp (-(c15 * t)) * exp (-(c16 * t))) *
+     (1 − exp (-(c11 * t)) * exp (-(c12 * t)))))
+</pre>
+
+</DL>
+
+
+
+<hr>
+</body>
+</html>

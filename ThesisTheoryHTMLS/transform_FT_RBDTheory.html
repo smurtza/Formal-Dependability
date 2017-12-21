@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head><title>Theory: transform_FT_RBD</title><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<style type="text/css">
+<!--
+  body {background: #faf0e6; color: #191970; }
+  span.freevar  { color: blue}
+  span.boundvar { color: green}
+  span.typevar  { color: purple}
+  span.type     { color: teal}
+  span.strong   { color: black; font-weight: bold}
+  span.vstrong  { color: black; 
+                  font-weight: bold;
+                  font-size: larger}
+  h1 {color: black}
+  th {color: crimson}
+-->
+</style>
+</head>
+<body>
+<h1>Theory "transform_FT_RBD"</h1>
+<span class="vstrong">Parents</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href = "ASN_gatewayTheory.html"><span class="strong">ASN_gateway</span></a>
+
+<h1>Signature</h1>
+<center>
+<table BORDER=4 CELLPADDING=10 CELLSPACING=1>
+
+    <tr>
+    <th>
+    Constant
+    <th>
+    Type<tr><td>
+            <span class="strong">UNIONL</span>
+            <td>
+            :α event list -> α event
+
+</table>
+</center>
+
+<h1>Definitions</h1>
+<DL>
+<DT><span class="strong">UNIONL_def</span>
+<DD>
+<pre>
+|- (UNIONL [] = ∅) ∧ ∀s ss. UNIONL (s::ss) = s ∪ UNIONL ss
+</pre>
+
+</DL>
+
+
+<hr>
+
+<hr>
+<h1>Theorems</h1>
+<DL>
+<DT><span class="strong">IN_UNIONL</span>
+<DD>
+<pre>
+|- ∀l v. v ∈ UNIONL l ⇔ ∃s. MEM s l ∧ v ∈ s
+</pre>
+
+<DT><span class="strong">AND_to_series</span>
+<DD>
+<pre>
+|- ∀p L. FTree p (AND (gate_list L)) = rbd_struct p (series (rbd_list L))
+</pre>
+
+<DT><span class="strong">OR_to_parallel</span>
+<DD>
+<pre>
+|- ∀p L. FTree p (OR (gate_list L)) = rbd_struct p (parallel (rbd_list L))
+</pre>
+
+<DT><span class="strong">AND_OR_to_series_parallel</span>
+<DD>
+<pre>
+|- ∀p L.
+     FTree p ((AND of (λa. OR (gate_list a))) L) =
+     rbd_struct p ((series of (λa. parallel (rbd_list a))) L)
+</pre>
+
+<DT><span class="strong">OR_AND_to_parallel_series</span>
+<DD>
+<pre>
+|- ∀p L.
+     FTree p ((OR of (λa. AND (gate_list a))) L) =
+     rbd_struct p ((parallel of (λa. series (rbd_list a))) L)
+</pre>
+
+<DT><span class="strong">NAND_gate_transform</span>
+<DD>
+<pre>
+|- ∀L1 L2 n p.
+     FTree p (AND (gate_list (compl_list p L1 ++ L2))) =
+     rbd_struct p (series (rbd_list (compl_list p L1 ++ L2)))
+</pre>
+
+<DT><span class="strong">NOR_gate_transform</span>
+<DD>
+<pre>
+|- ∀p L.
+     p_space p DIFF FTree p (OR (gate_list L)) =
+     p_space p DIFF rbd_struct p (parallel (rbd_list L))
+</pre>
+
+<DT><span class="strong">Inhibit_gate_transform</span>
+<DD>
+<pre>
+|- ∀p A B C.
+     prob_space p ∧ C ∈ events p ⇒
+     (FTree p (AND [OR [atomic A; atomic B]; NOT (atomic C)]) =
+      rbd_struct p (parallel [atomic A; atomic B]) ∩
+      (p_space p DIFF rbd_struct p (atomic C)))
+</pre>
+
+<DT><span class="strong">comp_gate_transform</span>
+<DD>
+<pre>
+|- ∀p A B.
+     prob_space p ∧ A ∈ events p ∧ B ∈ events p ⇒
+     (FTree p (OR [AND [atomic A; atomic B]; NOT (OR [atomic A; atomic B])]) =
+      rbd_struct p (series [atomic A; atomic B]) ∪
+      (p_space p DIFF rbd_struct p (parallel [atomic A; atomic B])))
+</pre>
+
+<DT><span class="strong">k_out_N_to_majority_voting_gate</span>
+<DD>
+<pre>
+|- ∀p X k n. majority_voting_FT_gate p X k n = K_out_N_struct p X k n
+</pre>
+
+</DL>
+
+
+
+<hr>
+</body>
+</html>
